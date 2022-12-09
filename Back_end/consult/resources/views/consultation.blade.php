@@ -5,6 +5,6 @@
     <title>consultations</title>
 </head>
 <body>
-    @dd(experts)
+    hello world
 </body>
 </html>

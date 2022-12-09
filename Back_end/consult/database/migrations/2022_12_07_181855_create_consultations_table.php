@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consulttypes', function (Blueprint $table) {
+        Schema::create('consultations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignId('consultation_id');
+            $table->foreignId('expert_id');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consulttypes');
+        Schema::dropIfExists('consultations');
     }
 };

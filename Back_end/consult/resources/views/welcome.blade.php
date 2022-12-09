@@ -1,5 +1,5 @@
 <!DOCTYPE html>
 
 <body>
-    @dd(date::getDays())
+    hello, world
 </body>
