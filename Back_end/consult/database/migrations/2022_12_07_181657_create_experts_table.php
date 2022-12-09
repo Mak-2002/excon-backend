@@ -15,6 +15,15 @@ return new class extends Migration
     {
         Schema::create('experts', function (Blueprint $table) {
             $table->id();
+            $table->integer('photo_id')->nullable();
+            $table->string('phone')->nullable();
+            $table->text('address_en')->nullable();
+            $table->text('address_ar')->nullable();
+            $table->double('rating')->default(0.0);
+            $table->text('bio_en');
+            $table->text('bio_ar')->nullable();
+            $table->double('service_cost');
+            $table->foreignId('user_id');
             $table->timestamps();
         });
     }

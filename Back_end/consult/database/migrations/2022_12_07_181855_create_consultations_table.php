@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('consultations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('type_en');
+            $table->string('type_ar');
         });
     }
 

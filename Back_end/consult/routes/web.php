@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models;
+use App\Models\Consultation;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get(
+    '/consultations/{consultation}',
+    fn(Consultation $consultation) => view('consutltation', [
+        'experts' => $consultation->experts
+    ])
+);

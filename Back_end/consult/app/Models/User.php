@@ -11,7 +11,23 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    
+
     // Mass Assigment is turned OFF
     protected $gaurded = [];
+
+    // public function expert() {
+    //     return $this->hasOne(Expert::class);
+    // }
+
+    public function appiontments() {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function favorites() {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function chats() {
+        return $this->hasMany(Chat::class);
+    }
 }

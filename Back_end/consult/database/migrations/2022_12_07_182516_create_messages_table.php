@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->integer('sender_id');
+            $table->integer('receiver_id');
+            $table->foreignId('chat_id');
+            $table->text('content');
         });
     }
 
