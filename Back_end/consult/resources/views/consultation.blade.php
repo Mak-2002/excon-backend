@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>consultations</title>
+    <link rel="stylesheet" href="/app.css">
 </head>
 <body>
-    hello world
+    @dd($consulttypes)
 </body>
 </html>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models;
+use App\Models\Consult_Type;
 use App\Models\Consultation;
 
 /*
@@ -20,8 +21,8 @@ Route::get('/', function () {
 });
 
 Route::get(
-    '/consultations/{consultation}',
+    '/consulttypes',
     fn(Consultation $consultation) => view('consutltation', [
-        'experts' => $consultation->experts
+        'consulttypes' => Consult_Type::all()
     ])
 );

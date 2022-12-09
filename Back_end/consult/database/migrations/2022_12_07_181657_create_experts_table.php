@@ -24,7 +24,6 @@ return new class extends Migration
             $table->text('bio_ar')->nullable();
             $table->double('service_cost');
             $table->foreignId('user_id');
-            $table->foreignId('consultation_id');
             $table->timestamps();
         });
     }
