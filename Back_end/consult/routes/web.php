@@ -1,10 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models;
-use App\Models\Consult_Type;
 use App\Models\Consultation;
-
+use App\Models\ConsultType;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,9 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get(
-    '/consulttypes',
-    fn(Consultation $consultation) => view('consutltation', [
-        'consulttypes' => Consult_Type::all()
-    ])
-);
+Route::get('/consulttypes', function () {
+    return view('consultations', [
+        'types' => ConsultType::with('consultations')->get()
+    ]);
+});

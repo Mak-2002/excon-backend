@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consult__types', function (Blueprint $table) {
+        Schema::create('consult_types', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('type_en');
-            $table->string('type_ar');
+            $table->string('type_en')->default('something');
+            $table->string('type_ar')->default('شيء ما');
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consult__types');
+        Schema::dropIfExists('consult_types');
     }
 };

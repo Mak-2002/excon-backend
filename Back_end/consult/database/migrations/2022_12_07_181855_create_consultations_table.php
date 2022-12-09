@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('consultations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('consultation_id');
+            $table->foreignId('consult_type_id');
             $table->foreignId('expert_id');
         });
     }

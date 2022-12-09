@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Consult_Type extends Model
+class ConsultType extends Model
 {
     use HasFactory;
 

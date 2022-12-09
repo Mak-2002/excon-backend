@@ -6,6 +6,6 @@
     <link rel="stylesheet" href="/app.css">
 </head>
 <body>
-    @dd($consulttypes)
+    @dd($types)
 </body>
 </html>
