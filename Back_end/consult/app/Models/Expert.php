@@ -33,4 +33,7 @@ class Expert extends Model
         return $this->hasMany(Consultation::class);
     }
 
+    public function workdays() {
+        return $this->hasMany(WorkDay::class);
+    }
 }

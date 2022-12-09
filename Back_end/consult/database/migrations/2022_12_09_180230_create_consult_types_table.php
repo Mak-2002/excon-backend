@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consulttypes', function (Blueprint $table) {
+        Schema::create('consult_types', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('consultation_id');
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consulttypes');
+        Schema::dropIfExists('consult_types');
     }
 };

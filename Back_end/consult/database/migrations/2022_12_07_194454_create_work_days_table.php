@@ -16,6 +16,12 @@ return new class extends Migration
         Schema::create('work_days', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('day');
+            $table->time('start_time_1');
+            $table->time('end_time_1');
+            $table->time('start_time_2')->nullable();
+            $table->time('end_time_2')->nullable();
+            $table->foreignId('expert_id');
         });
     }
 
