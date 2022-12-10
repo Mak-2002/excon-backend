@@ -3,14 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
 use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Message>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ConsultType>
  */
-class MessageFactory extends Factory
+class ConsultTypeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,10 +19,8 @@ class MessageFactory extends Factory
     public function definition()
     {
         return [
-            'sender_id' =>$this->faker->numberBetween(0, 10),
-            'receiver_id' =>$this->faker->numberBetween(0, 10),
-            'chat_id'=>Chat::factory(),
-            'content' => $this->faker->sentence,
+            'type_en' => $this->faker->word,
+            'type_ar' => 'استشارة'
         ];
     }
 }

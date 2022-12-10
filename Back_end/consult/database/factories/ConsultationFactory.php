@@ -4,15 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Models\User;
-use App\Models\Consultation;
-use App\Models\Appointment;
-use App\Models\Chat;
-use App\Models\Expert;
-use App\Models\Favorite;
-use App\Models\Message;
-use App\Models\WorkDay;
-
+use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Consultation>
@@ -27,7 +19,8 @@ class ConsultationFactory extends Factory
     public function definition()
     {
         return [
-            'type'=>$this->faker->text
+            'consult_type_id'=>ConsultType::factory(),
+            'expert_id' => Expert::factory()
         ];
     }
 }

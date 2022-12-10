@@ -2,14 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
-use App\Models\Consultation;
-use App\Models\Appointment;
-use App\Models\Chat;
-use App\Models\Expert;
-use App\Models\Favorite;
-use App\Models\Message;
-use App\Models\WorkDay;
+use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Consultation;
+use App\Models\{Consultation, User};
 use App\Models\ConsultType;
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +15,12 @@ use App\Models\ConsultType;
 */
 
 Route::get('/', function () {
+    $users = User::all();
+    // if(request('search')){
+    //     return var_dump(
+    //         $users->where('')
+    //     )
+    // }
     return view('welcome');
 });
 
