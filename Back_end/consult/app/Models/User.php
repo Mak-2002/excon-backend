@@ -12,34 +12,35 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Mass Assigment is turned OFF
-    protected $gaurded = [];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-    // public function expert() {
-    //     return $this->hasOne(Expert::class);
-    // }
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public function appiontments()
-    {
-        return $this->hasMany(Appointment::class);
-    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
-    public function favorites()
-    {
-        return $this->hasMany(Favorite::class);
-    }
-
-    public function chats()
-    {
-        return $this->hasMany(Chat::class);
-    }
-
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when(($filters['search'] ?? false), fn($query, $search) =>
-            $query
-                ->where('full_name_en', 'like', '%' . $filters['search'] . '%')) ;
-    }
-
+    
 }

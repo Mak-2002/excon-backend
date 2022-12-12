@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Models\{Consultation, User};
-use App\Models\ConsultType;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +13,6 @@ use App\Models\ConsultType;
 |
 */
 
-Route::get('/', [UserController::class, 'index']);
-
-Route::get('/consulttypes',[UserController::class, 'showConsultTypes']);
+Route::get('/', function () {
+    return view('welcome');
+});

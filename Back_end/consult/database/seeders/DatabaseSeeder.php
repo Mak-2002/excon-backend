@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
@@ -15,15 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // User::truncate();
-        // Expert::truncate();
-        // Chat::truncate();
-        // Favorite::truncate();
-        // Appointment::truncate();
-        // Message::truncate();
-        // Consultation::truncate();
-        // WorkDay::truncate();
-
         User::factory(10)->create();
         Expert::factory(10)->create();
         Chat::factory(10)->create();
@@ -32,5 +24,6 @@ class DatabaseSeeder extends Seeder
         Consultation::factory(10)->create();
         WorkDay::factory(10)->create();
         Favorite::factory(10)->create();
+        ConsultType::factory(10)->create();
     }
 }

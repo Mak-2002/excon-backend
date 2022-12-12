@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('favorites', function (Blueprint $table) {
-            $table->id();
+        Schema::create('messages', function (Blueprint $table) {
+                $table->id();
             $table->timestamps();
-            $table->foreignId('customer_id');
-            $table->foreignId('expert_id');
+            $table->integer('sender_id');
+            $table->integer('receiver_id');
+            $table->foreignId('chat_id');
+            $table->text('content');
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('messages');
     }
 };

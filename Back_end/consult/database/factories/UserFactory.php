@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -18,7 +19,8 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'full_name_en' => fake()->name(),
+              'full_name_en' => fake()->name(),
+              'email'=>fake()->email(),
             'full_name_ar' => 'مدحت',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'is_expert' =>  $this->faker->boolean,

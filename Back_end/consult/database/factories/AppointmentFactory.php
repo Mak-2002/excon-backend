@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-
 use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
-
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +23,7 @@ class AppointmentFactory extends Factory
             'start_time' => $this->faker->time,
             'end_time' => $this->faker->time,
             'customer_id' => User::factory(),
-            'expert_id' => Expert::factory(),
+            
         ];
     }
 }

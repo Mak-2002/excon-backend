@@ -14,13 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
+             $table->id();
             $table->timestamps();
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time')->nullable();
             $table->foreignId('customer_id');
-            $table->foreignId('expert_id');
+            
+           
         });
     }
 

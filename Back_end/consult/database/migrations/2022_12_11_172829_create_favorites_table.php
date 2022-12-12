@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('work_days', function (Blueprint $table) {
-            $table->id();
+        Schema::create('favorites', function (Blueprint $table) {
+             $table->id();
             $table->timestamps();
-            $table->string('day');
-            $table->time('start_time_1');
-            $table->time('end_time_1');
-            $table->time('start_time_2')->nullable();
-            $table->time('end_time_2')->nullable();
+            $table->foreignId('customer_id');
             $table->foreignId('expert_id');
         });
     }
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_days');
+        Schema::dropIfExists('favorites');
     }
 };

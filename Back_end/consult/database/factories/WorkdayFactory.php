@@ -1,11 +1,9 @@
 <?php
 
 namespace Database\Factories;
-
-use Illuminate\Database\Eloquent\Factories\Factory;
-
 use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Workday>

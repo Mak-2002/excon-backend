@@ -13,10 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consultations', function (Blueprint $table) {
-            $table->id();
+        Schema::create('work_days', function (Blueprint $table) {
+             $table->id();
             $table->timestamps();
-            $table->foreignId('consult_type_id');
+            $table->string('day');
+            $table->time('start_time_1');
+            $table->time('end_time_1');
+            $table->time('start_time_2')->nullable();
+            $table->time('end_time_2')->nullable();
             $table->foreignId('expert_id');
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consultations');
+        Schema::dropIfExists('work_days');
     }
 };

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('experts', function (Blueprint $table) {
-            $table->id();
+           $table->id();
             $table->integer('photo_id')->nullable();
             $table->string('phone')->nullable();
             $table->text('address_en')->nullable();
@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('bio_ar')->nullable();
             $table->double('service_cost');
             $table->foreignId('user_id');
+            $table->foreignId('appointment_id')->nullable();
             $table->timestamps();
         });
     }

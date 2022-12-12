@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ConsultType extends Model
 {
     use HasFactory;
-
-    public function consultations() {
+     public function consultations() {
         return $this->hasMany(Consultation::class);
     }
-
 }
