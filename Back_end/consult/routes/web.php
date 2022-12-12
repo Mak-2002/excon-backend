@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Models\{Consultation, User};
 use App\Models\ConsultType;
@@ -14,18 +15,6 @@ use App\Models\ConsultType;
 |
 */
 
-Route::get('/', function () {
-    $users = User::all();
-    // if(request('search')){
-    //     return var_dump(
-    //         $users->where('')
-    //     )
-    // }
-    return view('welcome');
-});
+Route::get('/', [UserController::class, 'index']);
 
-Route::get('/consulttypes', function () {
-    return view('consultations', [
-        'types' => ConsultType::with('consultations')->get()
-    ]);
-});
+Route::get('/consulttypes',[UserController::class, 'showConsultTypes']);

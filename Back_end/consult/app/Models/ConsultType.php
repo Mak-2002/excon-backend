@@ -12,4 +12,5 @@ class ConsultType extends Model
     public function consultations() {
         return $this->hasMany(Consultation::class);
     }
+
 }

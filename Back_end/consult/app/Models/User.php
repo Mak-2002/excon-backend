@@ -19,15 +19,27 @@ class User extends Authenticatable
     //     return $this->hasOne(Expert::class);
     // }
 
-    public function appiontments() {
+    public function appiontments()
+    {
         return $this->hasMany(Appointment::class);
     }
 
-    public function favorites() {
+    public function favorites()
+    {
         return $this->hasMany(Favorite::class);
     }
 
-    public function chats() {
+    public function chats()
+    {
         return $this->hasMany(Chat::class);
     }
+
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(($filters['search'] ?? false), fn($query, $search) =>
+            $query
+                ->where('full_name_en', 'like', '%' . $filters['search'] . '%')) ;
+    }
+
 }
