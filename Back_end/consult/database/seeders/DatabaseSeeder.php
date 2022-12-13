@@ -5,7 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use Illuminate\Database\Seeder;
-use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,6 +24,5 @@ class DatabaseSeeder extends Seeder
         Consultation::factory(10)->create();
         WorkDay::factory(10)->create();
         Favorite::factory(10)->create();
-        ConsultType::factory(10)->create();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Factories;
-use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

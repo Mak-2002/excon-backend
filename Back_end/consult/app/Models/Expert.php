@@ -30,7 +30,7 @@ class Expert extends Model
 
     public function consultations()
     {
-        return $consultations =  $this->hasMany(Consultation::class)->with('consult_type');
+        return $this->hasMany(Consultation::class);
     }
 
 
@@ -42,34 +42,32 @@ class Expert extends Model
 
     protected function scopeFilter($query, $filters)
     {
-        $query->when($filters['search'] ?? false, fn($query, $search) =>
-            $query->where(fn($query) =>
-                $query
-                    ->whereHas('user', fn($query) =>
-                        $query
-                            ->where('full_name_en', 'like', '%' . $search . '%')
-                            ->orWhere('full_name_ar', 'like', '%' . $search . '%')
-                    )
-                    ->orWhereExists(fn($query) =>
-                        $query
-                            ->from('consult_types')
-                            ->where('type_en', 'like', '%' . $search . '%')
-                            ->orwhere('type_ar', 'like', '%' . $search . '%')
-                            ->andWhereHas('consultations', fn($query) =>
-                                $query
-                                    ->whereColumn('consultations.consult_type_id', 'consult_types.id')
-                                    ->andWhereCulomn('consultations.expert_id', 'experts.id')
-                            )
-                    )
-            )
-        );
+        //TODO: search for user by name or type of consultation they offer
+        //     $query->when($filters['search'] ?? false, fn($query, $search) =>
+        //         $query->where(fn($query) =>
+        //             $query
+        //                 ->whereHas('user', fn($query) =>
+        //                     $query
+        //                         ->where('full_name_en', 'like', '%' . $search . '%')
+        //                         ->orWhere('full_name_ar', 'like', '%' . $search . '%')
+        //                 )
+        //                 ->orWhereExists(fn($query) =>
+        //                     $query
+        //                         ->from('consultations')
+        //                         ->where('type_en', 'like', '%' . $search . '%')
+        //                         ->orwhere('type_ar', 'like', '%' . $search . '%')
+        //                         )
+        // );
 
         $query->
-            when($filters['consulttype'] ?? false, fn($query, $consulttype) =>
-            $query->
-                whereHas('consultations', fn($query) =>
-                $query->where('consult_type_id', $consulttype)
-            )
-        );
+            when(
+                $filters['consulttype'] ?? false,
+                fn($query, $consulttype) =>
+                $query->
+                    whereHas(
+                        'consultations', fn($query) =>
+                        $query->where('id', $consulttype)
+                    )
+            );
     }
 }

@@ -12,7 +12,4 @@ class Consultation extends Model
         return $this->belongsTo(Expert::class);
     }
 
-    public function consult_type() {
-        return $this->belongsTo(ConsultType::class);
-    }
 }

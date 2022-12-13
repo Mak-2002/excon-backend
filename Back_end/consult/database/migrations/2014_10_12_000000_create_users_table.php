@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('full_name_ar')->nullable();
             $table->string('email');
             $table->string('password');
+            $table->string('phone')->nullable();
             $table->boolean('is_expert')->default(false);
             $table->double('balance')->default(1000);
             $table->rememberToken();

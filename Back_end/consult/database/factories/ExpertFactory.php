@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Factories;
-use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +19,6 @@ class ExpertFactory extends Factory
     {
         return [
             'photo_id' => $this->faker->numberBetween,
-            'phone' => $this->faker->phoneNumber,
             'address_en' => $this->faker->sentence,
             'address_ar' => $this->faker->sentence,
             'rating' => 3.0,

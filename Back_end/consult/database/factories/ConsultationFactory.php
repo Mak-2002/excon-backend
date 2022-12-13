@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Factories;
-use App\Models\{User, Consultation, ConsultType, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +18,8 @@ class ConsultationFactory extends Factory
     public function definition()
     {
         return [
-               'consult_type_id'=>ConsultType::factory(),
+            'type_en' => $this->faker->word,
+            'type_ar' => 'استشارة',
             'expert_id' => Expert::factory()
         ];
     }

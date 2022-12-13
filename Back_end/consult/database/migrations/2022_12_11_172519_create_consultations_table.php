@@ -14,9 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('consultations', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->foreignId('consult_type_id');
             $table->foreignId('expert_id');
+            $table->text('type_en');
+            $table->text('type_ar');
         });
     }
 

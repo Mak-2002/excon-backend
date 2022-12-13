@@ -35,10 +35,3 @@ Route::post('logout' ,  [SessionsController::class, 'logout']);
 Route::get('experts' ,  [ExpertsController::class, 'index']);
 Route::get('experts/{expert}' ,  [ExpertsController::class, 'show']);
 Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
-
-
-//consultTypes APIs
-Route::get('consultTypes' ,  [ConsultTypesController::class, 'index']);
-
-
-
