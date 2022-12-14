@@ -42,5 +42,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function favorite()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function chats()
+    {
+        return $this->hasMany(Chat::class);
+    }
+    
+
     
 }

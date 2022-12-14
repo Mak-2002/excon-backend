@@ -8,6 +8,38 @@ use Illuminate\Support\Facades\Auth;
 
 class sessionsController extends Controller
 {
+
+    public function create(request $request)
+    {
+        $fields = $request->validate([
+
+            'full_name_en' => 'required|min:3|max:55',
+
+            'email' => 'required|email',
+
+            'password' => 'required|min:3|max:55',
+
+        ]);
+        $user = new User();
+        $user->full_name_en = $fields['full_name_en'];
+        $user->email = $fields['email'];
+        $user->password = bcrypt($fields['password']);
+        if($user->save()){
+            auth()->login($user);
+            return response()->json([
+                'success'=>true,
+                'message'=>'successfully registered'
+            ]);
+        }
+        else{
+            return response()->json([
+                'success'=>false
+            ]);
+        }
+
+    }
+
+    
     public function login(Request $request)
     {
 

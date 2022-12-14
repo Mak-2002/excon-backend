@@ -3,8 +3,10 @@
 use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\ConsultTypesController;
 use App\Http\Controllers\ExpertsController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\sessionsController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,15 +25,28 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//registerAPIs
-Route::post('register' ,  [RegisterController::class, 'create']);
-
-
-//sessions APIs
+//sessions routes
+Route::post('register' ,  [sessionsController::class, 'create']);
 Route::post('login' ,  [sessionsController::class, 'login']);
 Route::post('logout' ,  [SessionsController::class, 'logout']);
 
-//experts APIs
+//experts routes
 Route::get('experts' ,  [ExpertsController::class, 'index']);
 Route::get('experts/{expert}' ,  [ExpertsController::class, 'show']);
-Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
+Route::get('expertsSchedule/{expert}' ,  [ExpertsController::class, 'schedule']);
+Route::get('expertsChats/{expert}' ,  [ExpertsController::class, 'chats']);
+Route::post('booking' ,  [ExpertsController::class, 'booking']);
+
+//users routes
+Route::get('usersChats/{user}' ,  [UsersController::class, 'chats']);
+Route::patch('payment/{user}/{expert}' ,  [UsersController::class, 'pay']);
+
+//messages routes
+Route::get('chat' ,  [MessagesController::class, 'index']);
+
+
+
+
+
+
+

@@ -23,6 +23,7 @@ class AppointmentFactory extends Factory
             'start_time' => $this->faker->time,
             'end_time' => $this->faker->time,
             'customer_id' => User::factory(),
+            'expert_id' => Expert::factory(),
             
         ];
     }

@@ -28,6 +28,12 @@ class Expert extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function scopeUser($query, $user_id)
+    {
+        $query -> whereHas('user',fn($query)=>
+            $query->where('id', $user_id));
+    }
+
     public function consultations()
     {
         return $this->hasMany(Consultation::class);
@@ -69,5 +75,7 @@ class Expert extends Model
                         $query->where('id', $consulttype)
                     )
             );
+       
+            
     }
 }

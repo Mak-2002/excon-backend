@@ -20,6 +20,8 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time')->nullable();
             $table->foreignId('customer_id');
+            $table->foreignId('expert_id');
+
             
            
         });
