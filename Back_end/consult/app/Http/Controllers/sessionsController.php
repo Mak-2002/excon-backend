@@ -12,7 +12,7 @@ class sessionsController extends Controller
     {
 
         $attributes = request()->validate([
-
+            
             'email' => 'required|email',
             'password' => 'required|min:3|max:255',
         ]);

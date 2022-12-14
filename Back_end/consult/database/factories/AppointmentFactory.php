@@ -22,7 +22,7 @@ class AppointmentFactory extends Factory
             'date' => $this->faker->date,
             'start_time' => $this->faker->time,
             'end_time' => $this->faker->time,
-            'customer_id' => User::factory(),
+            'user_id' => User::factory(),
             
         ];
     }

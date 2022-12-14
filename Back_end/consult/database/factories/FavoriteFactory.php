@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+
 use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,8 +19,8 @@ class FavoriteFactory extends Factory
     public function definition()
     {
         return [
-              'customer_id'=>User::factory(),
-            'expert_id'=>Expert::factory(),
+            'user_id' => User::factory(),
+            'expert_id' => Expert::factory(),
         ];
     }
 }

@@ -18,7 +18,9 @@ return new class extends Migration {
             $table->integer('photo_id')->nullable();
             $table->text('address_en')->nullable();
             $table->text('address_ar')->nullable();
-            $table->double('rating')->default(0.0);
+            $table->double('rating_sum');
+            $table->double('rating_count');
+            $table->integer('fav_count')->default(0);
             $table->text('bio_en');
             $table->text('bio_ar');
             $table->double('service_cost');

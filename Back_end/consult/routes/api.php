@@ -5,6 +5,7 @@ use App\Http\Controllers\ConsultTypesController;
 use App\Http\Controllers\ExpertsController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\sessionsController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +34,9 @@ Route::post('logout' ,  [SessionsController::class, 'logout']);
 
 //experts APIs
 Route::get('experts' ,  [ExpertsController::class, 'index']);
-Route::get('experts/{expert}' ,  [ExpertsController::class, 'show']);
+Route::get('expert/{expert}' ,  [ExpertsController::class, 'show']);
 Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
+Route::post('expert/updaterating', [ExpertsController::class, 'update_rating']);
+
+//users APIs
+Route::post('favorite', [UsersController::class, 'favor']);

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time')->nullable();
-            $table->foreignId('customer_id');
+            $table->foreignId('user_id');
             
            
         });

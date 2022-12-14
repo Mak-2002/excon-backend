@@ -9,7 +9,12 @@ class Consultation extends Model
 {
     use HasFactory;
     public function expert() {
-        return $this->belongsTo(Expert::class);
+    return $this->belongsTo(Expert::class);
     }
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'expert_id'
+    ];
 }
