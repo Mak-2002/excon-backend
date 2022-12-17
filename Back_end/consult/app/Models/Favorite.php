@@ -10,6 +10,6 @@ class Favorite extends Model
     use HasFactory;
 
     public function expert() {
-        return $this->hasOne(Expert::class);
+        return $this->belongsTo(Expert::class);
     }
 }

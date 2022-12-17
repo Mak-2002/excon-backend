@@ -27,10 +27,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //sessions routes
 Route::post('register' ,  [sessionsController::class, 'create']);
-Route::post('login' ,  [sessionsController::class, 'login']);
-Route::post('logout' ,  [SessionsController::class, 'logout']);
+Route::post('login' ,  [sessionsController::class, 'login'])->name('login');
+Route::post('logout' ,  [sessionsController::class, 'logout']);
 
 //experts routes
 Route::get('experts' ,  [ExpertsController::class, 'index']);
-Route::get('experts/{expert}' ,  [ExpertsController::class, 'show']);
+Route::get('expert/{expert}' ,  [ExpertsController::class, 'show']);
+Route::post('expert/updaterating' ,  [ExpertsController::class, 'update_rating']);
 Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
+
+//users routes
+Route::get('user/favorites', [UsersController::class, 'favorites']);
+Route::post('user/add_favorite', [UsersController::class, 'add_favorite']);
+Route::post('pay', [UsersController::class, 'pay']);

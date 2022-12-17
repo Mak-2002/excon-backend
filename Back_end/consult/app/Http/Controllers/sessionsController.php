@@ -5,25 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Ramsey\Uuid\Guid\Fields;
 
 class sessionsController extends Controller
 {
 
-    public function create(request $request)
+    public function create()
     {
-        $fields = $request->validate([
+        dd(request());
+        // $fields = request()->validate([
 
-            'full_name_en' => 'required|min:3|max:55',
+        //     'full_name_en' => 'required|min:2|max:55',
 
-            'email' => 'required|email',
+        //     'full_name_ar' => 'min:2|max:55',
 
-            'password' => 'required|min:3|max:55',
+        //     'email' => 'required|email',
 
-        ]);
+        //     'password' => 'required|min:3|max:55',
+
+        // ]);
+        // dd($fields);
+        // return $fields;
+        $fields = request();
         $user = new User();
         $user->full_name_en = $fields['full_name_en'];
         $user->email = $fields['email'];
         $user->password = bcrypt($fields['password']);
+        //
         if($user->save()){
             auth()->login($user);
             return response()->json([
