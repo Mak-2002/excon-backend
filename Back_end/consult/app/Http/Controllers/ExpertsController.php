@@ -44,8 +44,8 @@ class ExpertsController extends Controller
         //     $to_be_sent_array += [
         //         [
         //             'user_id' => $elemment->user_id,
-        //             'full_name_en' => $elemment->user->full_name_en,
-        //             'full_name_ar' => $elemment->user->full_name_ar,
+        //             'name_en' => $elemment->user->name_en,
+        //             'name_ar' => $elemment->user->name_ar,
         //             'email' => $elemment->user->email,
         //             'phone' => $elemment->user->phone,
         //             'photo_id' => $elemment->photo_id,

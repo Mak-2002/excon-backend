@@ -72,8 +72,8 @@ class Expert extends Model
                 ->whereHas(  // searching for matches in expert's user's full_name
                     'user', fn($query, $search_phrase) =>
                     $query
-                        ->where('full_name_en', 'like', '%' . $search_phrase . '%')
-                        ->orWhere('full_name_ar', 'like', '%' . $search_phrase . '%')
+                        ->where('name_en', 'like', '%' . $search_phrase . '%')
+                        ->orWhere('name_ar', 'like', '%' . $search_phrase . '%')
                 )
                 ->orWhereHas( // searching for matches in expert's types of consultations
                     'consultations', fn($query, $search_phrase) =>

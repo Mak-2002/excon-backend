@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\{User, Expert};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Guid\Fields;
@@ -10,49 +10,57 @@ use Ramsey\Uuid\Guid\Fields;
 class sessionsController extends Controller
 {
 
-    public function create()
+    public function create(Request $request)
     {
-        dd(request());
-        // $fields = request()->validate([
+        $request->validate([
+            'name_en' => 'required|min:2|max:55',
+            'name_ar' => 'min:2|max:55',
+            'email' => 'required|email|unique',
+            'password' => 'required|min:3|max:55',
+        ]);
+        $user = new User;
+        $user->name_en = $request->name_en;
+        $user->name_ar = $request->name_ar;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
 
-        //     'full_name_en' => 'required|min:2|max:55',
-
-        //     'full_name_ar' => 'min:2|max:55',
-
-        //     'email' => 'required|email',
-
-        //     'password' => 'required|min:3|max:55',
-
-        // ]);
-        // dd($fields);
-        // return $fields;
-        $fields = request();
-        $user = new User();
-        $user->full_name_en = $fields['full_name_en'];
-        $user->email = $fields['email'];
-        $user->password = bcrypt($fields['password']);
-        //
-        if($user->save()){
-            auth()->login($user);
+        if (!$user->save())
             return response()->json([
-                'success'=>true,
-                'message'=>'successfully registered'
+                'success' => false
             ]);
-        }
-        else{
-            return response()->json([
-                'success'=>false
+
+        if ($request->service_cost ?? false) {
+            $request->validate([
+                'address_en' => 'min:5',
+                'address_ar' => 'min:5',
+                'bio_en' => 'required|min:5',
+                'bio_ar' => 'min:5',
+                'service_cost' => 'required|double',
             ]);
+            $expert = new Expert;
+            $expert->address_en = $request->address_en;
+            $expert->address_ar = $request->address_ar;
+            $expert->bio_en = $request->bio_en;
+            $expert->bio_ar = $request->bio_ar;
+            $expert->service_cost = $request->service_cost;           
+            if (!$expert->save())
+                return response()->json([
+                    'success' => false
+                ]);     
         }
 
+        auth()->login($user);
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
-    
+
     public function login(Request $request)
     {
 
         $attributes = request()->validate([
-            
+
             'email' => 'required|email',
             'password' => 'required|min:3|max:255',
         ]);
