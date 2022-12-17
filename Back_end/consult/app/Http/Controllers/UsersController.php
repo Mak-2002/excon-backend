@@ -2,11 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 use Illuminate\Http\Request;
-use App\Models\{User, Expert, Consultation, ConsultType, Appointment, Favorite, Message, WorkDay, Chat};
 
 class UsersController extends Controller
 {
+    public function chats(User $user)
+    {
+       
+        return response()->json([
+
+            'schedule' => $user->chats
+        ]);
+     
+        
+    }
+
+    public function pay (User $user , Expert $expert)
+    {
+        
+        $user2 = $expert->user;
+       $user->update([
+        'balance' => $user->balance -=$expert->service_cost,
+       ]);
+       $user2->update([
+        'balance' => $user2->balance +=$expert->service_cost,
+       ]);
+       
+       return response()->json([
+
+        'expert' => $expert,
+        'user'=>$user
+    ]);
+        
+    }
+
     public function favor()
     {
         $expert = Expert::all()->user(request('expert_id'))->get();

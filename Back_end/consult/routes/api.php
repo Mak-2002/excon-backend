@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\ConsultTypesController;
 use App\Http\Controllers\ExpertsController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\sessionsController;
 use App\Http\Controllers\UsersController;
@@ -24,19 +25,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//registerAPIs
-Route::post('register' ,  [RegisterController::class, 'create']);
-
-
-//sessions APIs
+//sessions routes
+Route::post('register' ,  [sessionsController::class, 'create']);
 Route::post('login' ,  [sessionsController::class, 'login']);
 Route::post('logout' ,  [SessionsController::class, 'logout']);
 
-//experts APIs
+//experts routes
 Route::get('experts' ,  [ExpertsController::class, 'index']);
-Route::get('expert/{expert}' ,  [ExpertsController::class, 'show']);
+Route::get('experts/{expert}' ,  [ExpertsController::class, 'show']);
 Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
-Route::post('expert/updaterating', [ExpertsController::class, 'update_rating']);
-
-//users APIs
-Route::post('favorite', [UsersController::class, 'favor']);

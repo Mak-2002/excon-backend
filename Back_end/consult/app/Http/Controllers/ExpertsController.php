@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use PhpParser\Node\Expr;
-use App\Models\{User, Expert, Consultation, ConsultType, Appointment, Favorite, Message, WorkDay, Chat};
+use App\Models\Appointment;
+use App\Models\Expert;use App\Models\Expert\appointments;
+use App\Models\WorkDay;use Illuminate\Http\Request;
+
+// $sql= new mysqli_connect();
 
 class ExpertsController extends Controller
 {
@@ -74,23 +76,48 @@ class ExpertsController extends Controller
         // dd($to_be_sent_array);
     }
 
-
     public function show(Expert $expert)
     {
         return response()->json([
 
-            'expert' => $expert
+            'expert' => $expert,
         ]);
     }
 
-    public function schedule(Request $request)
+    public function schedule(Expert $expert)
     {
 
-
-        $expert = Expert::where('phone', $request['phone']);
         return response()->json([
 
-            'schedule' => $expert->appointments->date
+            'schedule' => $expert->appointments,
         ]);
+
     }
+
+    public function chats(Expert $expert)
+    {
+
+        return response()->json([
+
+            'chats' => $expert->chats,
+        ]);
+
+    }
+
+    public function booking()
+    {
+
+        $appointment = new Appointment;
+
+        $appointment->date = request('date');
+        $appointment->start_time = request('start_time');
+        $appointment->end_time = request('end_time');
+        $appointment->expert_id = request('expert_id');
+        $appointment->customer_id = request('user_id');
+
+        $appointment->save();
+        return $appointment;
+
+    }
+
 }
