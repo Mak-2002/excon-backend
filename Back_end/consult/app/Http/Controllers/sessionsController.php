@@ -37,12 +37,21 @@ class sessionsController extends Controller
                 'bio_ar' => 'min:5',
                 'service_cost' => 'required|double',
             ]);
+
             $expert = new Expert;
             $expert->address_en = $request->address_en;
             $expert->address_ar = $request->address_ar;
             $expert->bio_en = $request->bio_en;
             $expert->bio_ar = $request->bio_ar;
             $expert->service_cost = $request->service_cost;           
+
+            // Store profile photo
+            $image = $request->file('image');
+            if ($image ?? false) {
+                $path = $image->storeAs('app/public/profile_photos', $user->id);
+                $expert->photo_path = $path;
+            }
+
             if (!$expert->save())
                 return response()->json([
                     'success' => false

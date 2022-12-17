@@ -40,3 +40,7 @@ Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
 Route::get('user/favorites', [UsersController::class, 'favorites']);
 Route::post('user/add_favorite', [UsersController::class, 'add_favorite']);
 Route::post('pay', [UsersController::class, 'pay']);
+
+//TODO:
+// test photo storage
+// list all appointments of an expert

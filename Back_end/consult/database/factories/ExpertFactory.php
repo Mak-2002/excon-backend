@@ -18,7 +18,7 @@ class ExpertFactory extends Factory
     public function definition()
     {
         return [
-            'photo_id' => $this->faker->numberBetween,
+            'photo_path' => $this->faker->numberBetween,
             'address_en' => $this->faker->sentence,
             'address_ar' => $this->faker->sentence,
             'rating_sum' => 11,

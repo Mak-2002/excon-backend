@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Expert;use App\Models\Expert\appointments;
 use App\Models\WorkDay;use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 // $sql= new mysqli_connect();
 
@@ -38,42 +39,7 @@ class ExpertsController extends Controller
                 $element->consultations = $element->consultations->toArray();
 
         return ($query->toArray());
-        // $to_be_sent_array = array();
 
-        // $counter = 0; foreach ($query as $elemment) {
-        //     $to_be_sent_array += [
-        //         [
-        //             'user_id' => $elemment->user_id,
-        //             'name_en' => $elemment->user->name_en,
-        //             'name_ar' => $elemment->user->name_ar,
-        //             'email' => $elemment->user->email,
-        //             'phone' => $elemment->user->phone,
-        //             'photo_id' => $elemment->photo_id,
-        //             'address_en' => $elemment->address_en,
-        //             'address_ar' => $elemment->address_ar,
-        //             'balance' => $elemment->user->balance,
-        //             'rating' => $elemment->rating,
-        //             'bio_en' => $elemment->bio_en,
-        //             'bio_ar' => $elemment->bio_ar,
-        //             'service_cost' => $elemment->service_cost,
-        //             'consultations' => array_map(
-        //                 function ($consult) {
-        //                     $consults = array();
-        //                     $consults += [
-        //                         [
-        //                             'consult_id' => $consult->id,
-        //                             'type_en' => $consult->type_en,
-        //                             'type_ar' => $consult->type_ar
-        //                         ]
-        //                     ];
-        //                     return $consults;
-        //                 }
-        //                 , $element->consultations
-        //             )
-        //         ]
-        //     ];
-        // }
-        // dd($to_be_sent_array);
     }
 
     public function show(Expert $expert)
