@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         Message::factory(10)->create();
         Appointment::factory(10)->create();
         Consultation::factory(10)->create();
-        WorkDay::factory(10)->create();
+        // WorkDay::factory(10)->create();
         Favorite::factory(10)->create();
     }
 }

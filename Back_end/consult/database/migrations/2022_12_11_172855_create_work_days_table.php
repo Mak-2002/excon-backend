@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::create('work_days', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('day');
+            $table->string('day')->unique();
             $table->boolean('is_available')->default(true);
             $table->time('start_time_1')->nullable();
             $table->time('end_time_1')->nullable();

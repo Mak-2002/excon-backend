@@ -31,6 +31,7 @@ Route::post('login' ,  [sessionsController::class, 'login'])->name('login');
 Route::post('logout' ,  [sessionsController::class, 'logout']);
 
 //experts routes
+Route::post('expert/uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
 Route::get('experts' ,  [ExpertsController::class, 'index']);
 Route::get('expert/{expert}' ,  [ExpertsController::class, 'show']);
 Route::post('expert/updaterating' ,  [ExpertsController::class, 'update_rating']);

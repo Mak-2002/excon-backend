@@ -14,7 +14,7 @@ class Expert extends Model
     protected $gaurded = [];
 
     protected $with = [
-        'user'
+        // 'user'
     ];
 
     protected $hidden = [
@@ -44,7 +44,7 @@ class Expert extends Model
         return $this->hasMany(Consultation::class);
     }
 
-    public function workdays()
+    public function work_days()
     {
         return $this->hasMany(WorkDay::class);
     }

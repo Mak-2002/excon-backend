@@ -15,11 +15,14 @@ class UsersController extends Controller
      * @throws ItemNotFoundException
      * @return mixed User
      */
-    public static function get_user_or_fail($user_id)
+    public static function get_user_or_fail($user_id, bool $throws_exception = true)
     {
         $user = User::find($user_id);
-        if (is_null($user))
-            throw new ItemNotFoundException("USER NOT FOUND", 1);
+        if (is_null($user)) {
+            if ($throws_exception)
+                throw new ItemNotFoundException("USER NOT FOUND", 1);
+            return null;
+        }
         return $user;
     }
 
@@ -62,7 +65,9 @@ class UsersController extends Controller
         // Create favorite instance
         $favorite = new Favorite;
         $favorite->setRelation('user', $user);
+        $favorite->user_id = $user->id;
         $favorite->setRelation('expert', $expert);
+        $favorite->expert_id = $expert->id;
         $favorite->save();
 
         return $favorite->toJSON(); //DEBUG
