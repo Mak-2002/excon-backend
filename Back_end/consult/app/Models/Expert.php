@@ -44,18 +44,16 @@ class Expert extends Model
         return $this->hasMany(Consultation::class);
     }
 
-
-
     public function workdays()
     {
         return $this->hasMany(WorkDay::class);
     }
 
-    protected function scopeUser($query, $user_id) { // get expert's user
+    protected static function scopeUser($query, $user_id) { // get expert's user
         $query->whereHas(
             'user',
             fn($query) => $query->where('id', $user_id)
-        );
+        )->first();
     }
 
     public function favorableBy() {

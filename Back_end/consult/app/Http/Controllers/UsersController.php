@@ -4,37 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 use Illuminate\Http\Request;
+use Illuminate\Support\ItemNotFoundException;
 
 class UsersController extends Controller
 {
 
     /**
-     * find user by it's id
+     * find user by it's id or fail
      * @param mixed $user_id
-     * @return mixed User instance or abort(404)
+     * @throws ItemNotFoundException
+     * @return mixed User
      */
-    private static function get_user_or_fail($user_id)
+    public static function get_user_or_fail($user_id)
     {
         $user = User::find($user_id);
-        if ($user ?? true)
-            abort(404, "USER NOT FOUND");
+        if (is_null($user))
+            throw new ItemNotFoundException("USER NOT FOUND", 1);
         return $user;
     }
+
     public function chats()
     {
         $user = $this::get_user_or_fail(request('user_id'));
         return response()->json([
-
             'chats' => $user->chats
         ]);
-
-
     }
 
-    public function pay()
+    public function pay(Request $request)
     {
-        $expert = $this->get_user_or_fail(request('expert_id'));
-        $user = $this->get_user_or_fail(request('user_id'));
+        $expert = $this->get_user_or_fail($request->expert_id);
+        $user = $this->get_user_or_fail($request->user_id);
 
         if ($user->balance < $expert->service_cost)
             return false;
@@ -48,38 +48,37 @@ class UsersController extends Controller
         // dump(response()->json([
         //     'expert' => $expert,
         //     'user' => $user
-        // ])); // DEBUG    
+        // ])); //DEBUG    
 
     }
 
-    public function add_favorite()
+    public function add_favorite(Request $request)
     {
-        $expert = $this->get_user_or_fail(request('expert_id'));
-        $this->get_user_or_fail(request('user_id'));
-
-        if ($expert ?? true)
-            abort(404);
+        $expert = $this->get_user_or_fail($request->expert_id);
+        $user = $this->get_user_or_fail($request->user_id);
         // dd($expert); //DEBUG
-        $expert->fav_count += 1;
 
+        $expert->fav_count += 1;
         // Create favorite instance
         $favorite = new Favorite;
-        $favorite->expert_id = $expert->id;
-        $favorite->user_id = request('user_id');
+        $favorite->setRelation('user', $user);
+        $favorite->setRelation('expert', $expert);
         $favorite->save();
 
-        return $favorite->toJSON();
+        return $favorite->toJSON(); //DEBUG
+        // return response()->noContent();
     }
 
-    public function favorites()
+    public function favorites(Request $request)
     {
         $favs = Expert::whereHas(
             'favorableBy',
             fn($query) =>
             $query
-                ->where('user_id', request(['user_id']))
+                ->where('user_id', $request->user_id)
         )->get();
-        return $favs->toJSON();
+        return $favs->toJSON(); //DEBUG
+        //return response()->noContent(); 
     }
 
 }

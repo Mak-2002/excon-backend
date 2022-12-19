@@ -34,12 +34,15 @@ Route::post('logout' ,  [sessionsController::class, 'logout']);
 Route::get('experts' ,  [ExpertsController::class, 'index']);
 Route::get('expert/{expert}' ,  [ExpertsController::class, 'show']);
 Route::post('expert/updaterating' ,  [ExpertsController::class, 'update_rating']);
-Route::get('expertsSchedule' ,  [ExpertsController::class, 'schedule']);
+Route::get('expert/schedule' ,  [ExpertsController::class, 'schedule']);
+Route::post('expert/schedule', [ExpertsController::class, 'create_schedule']);
 
 //users routes
 Route::get('user/favorites', [UsersController::class, 'favorites']);
 Route::post('user/add_favorite', [UsersController::class, 'add_favorite']);
 Route::post('pay', [UsersController::class, 'pay']);
+
+
 
 //TODO:
 // test photo storage

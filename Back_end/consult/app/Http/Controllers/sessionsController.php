@@ -21,7 +21,7 @@ class sessionsController extends Controller
         $user = new User;
         $user->name_en = $request->name_en;
         $user->name_ar = $request->name_ar;
-        $user->email = $request->email;
+        $user->email = mb_strtolower($request->email);
         $user->password = bcrypt($request->password);
 
         if (!$user->save())
@@ -67,8 +67,8 @@ class sessionsController extends Controller
 
     public function login(Request $request)
     {
-
-        $attributes = request()->validate([
+        $request->email = mb_strtolower($request->email);
+        $attributes = $request->validate([
 
             'email' => 'required|email',
             'password' => 'required|min:3|max:255',

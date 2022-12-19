@@ -6,18 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\ItemNotFoundException;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
+    use HasApiTokens, HasFactory, Notifiable;    
+     protected $fillable = [
         'name',
         'email',
         'password',
@@ -31,7 +26,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'created_at', 
+        'created_at',
         'updated_at'
     ];
 
@@ -53,7 +48,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Chat::class);
     }
-    
 
-    
+    public function expert(){
+        // if (!$this->is_expert)
+        //     return null;
+        return $this->hasOne(Expert::class);
+    }
 }

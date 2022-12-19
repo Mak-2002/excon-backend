@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class WorkDay extends Model
 {
     use HasFactory;
+
+    protected function expert()
+    {
+        return $this->belongsTo(Expert::class);
+    }
 }
