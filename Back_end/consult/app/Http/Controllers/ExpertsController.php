@@ -72,29 +72,25 @@ class ExpertsController extends Controller
                 'consulttype' => $request->consulttype,
                 'search' => $request->search
             ])->get();
-
+        
         foreach ($query as $element)
             if (!is_null($element->consultations))
                 $element->consultations = $element->consultations->toArray();
 
-        return ($query->toArray());
-
+        return ($query->toJSON());
     }
 
-    public function show(Expert $expert)
+    public function show(Request $request)
     {
         return response()->json([
-
-            'expert' => $expert,
+            'expert' => ExpertsController::get_expert_by_user_id_or_fail($request->expert_id),
         ]);
     }
 
-    public function schedule(Expert $expert)
+    public function schedule(Request $request)
     {
-
         return response()->json([
-
-            'schedule' => $expert->appointments,
+            'schedule' => ExpertsController::get_expert_by_user_id_or_fail($request->expert_id)->appointments,
         ]);
 
     }
@@ -103,7 +99,6 @@ class ExpertsController extends Controller
     {
         $expert = self::get_expert_by_user_id_or_fail($request->user_id);
         return response()->json([
-
             'chats' => $expert->chats,
         ]);
     }
@@ -126,7 +121,6 @@ class ExpertsController extends Controller
         $appointment->save();
         return $appointment; //DEBUG
         //return response()->noContent();
-
     }
 
     public function create_schedule(Request $request)
@@ -146,12 +140,16 @@ class ExpertsController extends Controller
             $row->day = $day;
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
-            $row->start_time_1 = $item['start_time_1'];
-            $row->end_time_1 = $item['end_time_1'];
-            if (array_key_exists('start_time_2', $item))
-                $row->start_time_2 = $item['start_time_2'];
-            if (array_key_exists('end_time_2', $item))
-                $row->end_time_2 = $item['end_time_2'];
+            if (array_key_exists('is_available', $item))
+                $row->is_available = $item['is_available'];
+            if ($row->is_available) {
+                $row->start_time_1 = $item['start_time_1'];
+                $row->end_time_1 = $item['end_time_1'];
+                if (array_key_exists('start_time_2', $item))
+                    $row->start_time_2 = $item['start_time_2'];
+                if (array_key_exists('end_time_2', $item))
+                    $row->end_time_2 = $item['end_time_2'];
+            }
             $row->save();
         }
         return response()->json([
