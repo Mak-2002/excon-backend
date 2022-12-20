@@ -27,29 +27,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //sessions routes
 Route::post('register', [sessionsController::class, 'create']);
-Route::post('login',    [sessionsController::class, 'login'])->name('login');
-Route::post('logout',   [sessionsController::class, 'logout']);
+Route::post('login', [sessionsController::class, 'login'])->name('login');
+Route::post('logout', [sessionsController::class, 'logout']);
 
 //experts routes
 Route::get('experts', [ExpertsController::class, 'index']);
 Route::prefix('expert')->group(function () {
     Route::post('update', [ExpertsController::class, 'update']);
     Route::post('uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
-    Route::get('/',                   [ExpertsController::class, 'show']);
-    Route::post('updaterating',       [ExpertsController::class, 'update_rating']);
-    Route::get('schedule',            [ExpertsController::class, 'schedule']);
-    Route::post('schedule',           [ExpertsController::class, 'create_schedule']);
+    Route::get('/', [ExpertsController::class, 'show']);
+    Route::post('updaterating', [ExpertsController::class, 'update_rating']);
+    Route::get('schedule', [ExpertsController::class, 'schedule']);
+    Route::post('schedule', [ExpertsController::class, 'create_schedule']);
 });
 
 //users routes
 Route::prefix('user')->group(function () {
-    Route::get('favorites',     [UsersController::class, 'favorites']);
+    Route::get('favorites', [UsersController::class, 'favorites']);
     Route::post('add_favorite', [UsersController::class, 'add_favorite']);
-    Route::post('pay',          [UsersController::class, 'pay']);
+    Route::post('pay', [UsersController::class, 'pay']);
 });
 
 
 
 //TODO:
 // test photo storage
-// list all appointments of an expert
+// list all appointments of an expert "after the search time"

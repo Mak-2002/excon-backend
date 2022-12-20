@@ -97,7 +97,6 @@ class ExpertsController extends Controller
 
     public function show(Request $request)
     {
-        return response("hellp");
         return response()->json([
             'expert' => ExpertsController::get_expert_by_user_id_or_fail($request->expert_id),
         ]);

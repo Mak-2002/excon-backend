@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{User, Expert};
+use Doctrine\Inflector\Rules\Turkish\Rules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Guid\Fields;
@@ -13,11 +14,12 @@ class sessionsController extends Controller
     {
         $is_expert = $request->service_cost ?? false;
         $request->validate([
-            'name_en' => 'required|min:2|max:55',
-            'name_ar' => 'min:2|max:55',
-            'email' => 'required|email',
-            'password' => 'required|min:3|max:55',
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required'],
         ]);
+
         $user = new User;
         $user->name_en = $request->name_en;
         $user->name_ar = $request->name_ar;
@@ -36,7 +38,7 @@ class sessionsController extends Controller
                 'address_ar' => 'min:5',
                 'bio_en' => 'required|min:5',
                 'bio_ar' => 'min:5',
-                'service_cost' => 'required',
+                'service_cost' => 'required|numeric',
             ]);
             $expert->address_en = $request->address_en;
             $expert->address_ar = $request->address_ar;
