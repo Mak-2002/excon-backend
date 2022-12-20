@@ -34,6 +34,21 @@ class ExpertsController extends Controller
         return $expert;
     }
 
+    public function update(Request $request)
+    {
+        $atts = array_keys($request->toArray());
+        $expert = ExpertsController::get_expert_by_user_id_or_fail($request->expert_id);
+        foreach($atts as $att) {
+            if ($att == 'expert_id')
+                continue;
+            $expert->$att = $request->$att;
+        }
+        $expert->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'expert updated successfully'
+        ]);
+    }
     public function upload_profile_photo(Request $request)
     {
         $expert = self::get_expert_by_user_id_or_fail($request->expert_id);

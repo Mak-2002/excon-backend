@@ -33,6 +33,7 @@ Route::post('logout',   [sessionsController::class, 'logout']);
 //experts routes
 Route::get('experts', [ExpertsController::class, 'index']);
 Route::prefix('expert')->group(function () {
+    Route::post('update', [ExpertsController::class, 'update']);
     Route::post('uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
     Route::get('/',                   [ExpertsController::class, 'show']);
     Route::post('updaterating',       [ExpertsController::class, 'update_rating']);
