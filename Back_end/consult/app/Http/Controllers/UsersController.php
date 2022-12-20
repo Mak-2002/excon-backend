@@ -8,7 +8,6 @@ use Illuminate\Support\ItemNotFoundException;
 
 class UsersController extends Controller
 {
-
     /**
      * find user by it's id or fail
      * @param mixed $user_id
@@ -57,6 +56,11 @@ class UsersController extends Controller
 
     public function add_favorite(Request $request)
     {
+        if ($request->expert_id === $request->user_id)
+            return response()->json([
+                'success' => false,
+                'message' => "can't add expert to it's favorites"
+            ]);
         $expert = $this->get_user_or_fail($request->expert_id);
         $user = $this->get_user_or_fail($request->user_id);
         // dd($expert); //DEBUG
