@@ -82,7 +82,7 @@ class ExpertsController extends Controller
 
     public function index(Request $request)
     {
-        $query = Expert::all()->with(['user', 'consultations'])
+        $query = Expert::latest()->with(['user', 'consultations'])
             ->filter([
                 'consulttype' => $request->consulttype,
                 'search' => $request->search
@@ -120,10 +120,13 @@ class ExpertsController extends Controller
 
     public function book(Request $request)
     {
+        
+
         // time format in 24h
         $appointment = new Appointment;
         $user = UsersController::get_user_or_fail($request->user_id);
         $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
+        
 
         $appointment->date = $request->date;
         $appointment->start_time = $request->start_time;

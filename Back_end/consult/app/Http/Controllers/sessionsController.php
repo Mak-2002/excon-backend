@@ -12,7 +12,7 @@ class sessionsController extends Controller
 {
     public function create(Request $request)
     {
-        $is_expert = $request->service_cost ?? false;
+        $is_expert = $request->bio_en ?? false;
         $request->validate([
             'name_en' => ['required', 'string', 'max:255'],
             'name_ar' => ['required', 'string', 'max:255'],
