@@ -51,5 +51,4 @@ Route::prefix('user')->group(function () {
 
 
 //TODO:
-// test photo storage
 // list all appointments of an expert "after the search time"

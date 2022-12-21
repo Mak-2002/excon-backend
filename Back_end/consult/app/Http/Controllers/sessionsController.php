@@ -14,8 +14,8 @@ class sessionsController extends Controller
     {
         $is_expert = $request->bio_en ?? false;
         $request->validate([
-            'name_en' => ['required', 'string', 'max:255'],
-            'name_ar' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:21'],
+            'name_ar' => ['required', 'string', 'max:21'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required'],
         ]);
@@ -52,6 +52,8 @@ class sessionsController extends Controller
                 'success' => false
             ]);
         }
+
+
 
         auth()->login($user);
         
