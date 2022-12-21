@@ -54,10 +54,9 @@ class ExpertsController extends Controller
         $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
         // Store profile photo
         $image = $request->file('profile_photo');
-        if (!is_null($image)) {
-            $path = $image->storeAs('app/public/profile_photos', $request->expert_id);
-            $expert->photo_path = $path;
-        }
+        $path = $image->storeAs('public/profile_photos', $request->expert_id.'.jpg');
+        dd($path);
+        $expert->photo_path = $path;
         return response()->json([
             'success' => true,
             'message' => 'profile photo uploaded successfully'
