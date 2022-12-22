@@ -89,7 +89,9 @@ class Expert extends Model
                 $query->
                     whereHas(
                         'consultations', fn($query) =>
-                        $query->where('id', $consulttype)
+                        $query
+                            ->where('type_en', $consulttype)
+                            ->orWhere('type_ar', $consulttype)
                     )
             );
        

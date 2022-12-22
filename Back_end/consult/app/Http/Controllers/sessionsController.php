@@ -36,7 +36,7 @@ class sessionsController extends Controller
         if (!$user->save())
             return response()->json([
                 'success' => false,
-                'message' => "couldn't create user"
+                'message' => "could not create user"
             ]);
 
         $expert = new Expert;
