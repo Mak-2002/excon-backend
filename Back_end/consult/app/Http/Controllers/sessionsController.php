@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\{User, Expert};
 use Doctrine\Inflector\Rules\Turkish\Rules;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Guid\Fields;
@@ -19,6 +20,10 @@ class sessionsController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required'],
         ]);
+
+        if(is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
+            throw new Exception(" USER ALREADY EXISTS ", 1);
+            
 
         $user = new User;
         $user->name_en = $request->name_en;

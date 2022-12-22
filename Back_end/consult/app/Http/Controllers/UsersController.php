@@ -9,12 +9,30 @@ use Illuminate\Support\ItemNotFoundException;
 class UsersController extends Controller
 {
     /**
+     * tries to find user by its email 
+     * @param mixed $email
+     * @param bool $throws_exception
+     * @throws ItemNotFoundException 
+     * @return mixed user
+     */
+    public static function find_user_by_email_or_fail($email, bool $throws_exception=true) {
+        $user = User::where('email', $email)->first();
+        if(is_null($user)) {
+            if ($throws_exception)
+                throw new ItemNotFoundException(" USER NOT FOUND ", 1);
+            return null;
+        }
+        return $user;
+    }
+
+
+    /**
      * find user by it's id or fail
      * @param mixed $user_id
      * @throws ItemNotFoundException
      * @return mixed User
      */
-    public static function get_user_or_fail($user_id, bool $throws_exception = true)
+    public static function find_user_or_fail($user_id, bool $throws_exception = true)
     {
         $user = User::find($user_id);
         if (is_null($user)) {
@@ -27,7 +45,7 @@ class UsersController extends Controller
 
     public function chats()
     {
-        $user = $this::get_user_or_fail(request('user_id'));
+        $user = $this::find_user_or_fail(request('user_id'));
         return response()->json([
             'chats' => $user->chats
         ]);
@@ -35,8 +53,8 @@ class UsersController extends Controller
 
     public function pay(Request $request)
     {
-        $expert = $this->get_user_or_fail($request->expert_id);
-        $user = $this->get_user_or_fail($request->user_id);
+        $expert = $this->find_user_or_fail($request->expert_id);
+        $user = $this->find_user_or_fail($request->user_id);
 
         if ($user->balance < $expert->service_cost)
             return false;
@@ -61,8 +79,8 @@ class UsersController extends Controller
                 'success' => false,
                 'message' => "can't add expert to it's favorites"
             ]);
-        $expert = $this->get_user_or_fail($request->expert_id);
-        $user = $this->get_user_or_fail($request->user_id);
+        $expert = $this->find_user_or_fail($request->expert_id);
+        $user = $this->find_user_or_fail($request->user_id);
         // dd($expert); //DEBUG
 
         $expert->fav_count += 1;

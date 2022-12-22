@@ -123,7 +123,7 @@ class ExpertsController extends Controller
 
         // time format in 24h
         $appointment = new Appointment;
-        $user = UsersController::get_user_or_fail($request->user_id);
+        $user = UsersController::find_user_or_fail($request->user_id);
         $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
         
 
