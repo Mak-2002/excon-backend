@@ -12,10 +12,10 @@ class sessionsController extends Controller
 {
     public function create(Request $request)
     {
-        $is_expert = $request->bio_en ?? false;
+        
         $request->validate([
-            'name_en' => ['required', 'string', 'max:21'],
-            'name_ar' => ['required', 'string', 'max:21'],
+            'name_en' => ['required', 'string', 'max:22'],
+            'name_ar' => ['required', 'string', 'max:22'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required'],
         ]);
@@ -23,8 +23,10 @@ class sessionsController extends Controller
         $user = new User;
         $user->name_en = $request->name_en;
         $user->name_ar = $request->name_ar;
+        $user->phone = $request->phone;
         $user->email = mb_strtolower($request->email);
         $user->password = bcrypt($request->password);
+        $user->is_expert = ($request->service_cost > 0);
 
         if (!$user->save())
             return response()->json([
@@ -32,7 +34,7 @@ class sessionsController extends Controller
             ]);
 
         $expert = new Expert;
-        if ($is_expert) {
+        if ($user->is_expert) {
             $request->validate([
                 'address_en' => 'min:5',
                 'address_ar' => 'min:5',
@@ -48,12 +50,10 @@ class sessionsController extends Controller
             $expert->setRelation('user', $user);
             $expert->user_id = $user->id;
             if (!$expert->save())
-            return response()->json([
-                'success' => false
-            ]);
+                return response()->json([
+                    'success' => false
+                ]);
         }
-
-
 
         auth()->login($user);
         
@@ -75,13 +75,13 @@ class sessionsController extends Controller
         $attributes['email'] = mb_strtolower($attributes['email']);
         if (!auth()->attempt($attributes)) {
             return response([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'unauthorizaed',
             ]);
         }
         $user = Auth::user();
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'message' => 'successfully logged in',
             'user' => $user,
             'expert' => ExpertsController::get_expert_by_user_id_or_fail($user->id, false)
