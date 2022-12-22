@@ -15,9 +15,10 @@ class UsersController extends Controller
      * @throws ItemNotFoundException 
      * @return mixed user
      */
-    public static function find_user_by_email_or_fail($email, bool $throws_exception=true) {
+    public static function find_user_by_email_or_fail($email, bool $throws_exception = true)
+    {
         $user = User::where('email', $email)->first();
-        if(is_null($user)) {
+        if (is_null($user)) {
             if ($throws_exception)
                 throw new ItemNotFoundException(" USER NOT FOUND ", 1);
             return null;
@@ -57,13 +58,19 @@ class UsersController extends Controller
         $user = $this->find_user_or_fail($request->user_id);
 
         if ($user->balance < $expert->service_cost)
-            return false;
+            return response()->json([
+                'success' => false,
+                'message' => 'not enough balance'
+            ]);
 
         $user2 = $expert->user;
         $user->balance -= $expert->service_cost;
         $user2->balance += $expert->service_cost;
 
-        return true;
+        return response()->json([
+            'success' => true,
+            'message' => 'payment approved'
+        ]);
 
         // dump(response()->json([
         //     'expert' => $expert,
@@ -74,7 +81,7 @@ class UsersController extends Controller
 
     public function add_favorite(Request $request)
     {
-        if ($request->expert_id === $request->user_id)
+        if ($request->expert_id == $request->user_id)
             return response()->json([
                 'success' => false,
                 'message' => "can't add expert to it's favorites"
@@ -92,8 +99,11 @@ class UsersController extends Controller
         $favorite->expert_id = $expert->id;
         $favorite->save();
 
-        return $favorite->toJSON(); //DEBUG
-        // return response()->noContent();
+        // return $favorite->toJSON(); //DEBUG
+        return response()->json([
+            'success' => true,
+            'message' => 'added to favorites successfully'
+        ]);
     }
 
     public function favorites(Request $request)
@@ -104,8 +114,7 @@ class UsersController extends Controller
             $query
                 ->where('user_id', $request->user_id)
         )->get();
-        return $favs->toJSON(); //DEBUG
-        //return response()->noContent(); 
+        return $favs->toJSON();
     }
 
 }

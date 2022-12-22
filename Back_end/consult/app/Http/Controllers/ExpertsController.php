@@ -93,9 +93,9 @@ class ExpertsController extends Controller
                 'search' => $request->search
             ])->get();
 
-        foreach ($query as $element)
-            if (!is_null($element->consultations))
-                $element->consultations = $element->consultations->toArray();
+        foreach ($query as $expert)
+            if (!is_null($expert->consultations))
+                $expert->consultations = $expert->consultations->toArray();
 
         return ($query->toJSON());
     }
@@ -117,9 +117,8 @@ class ExpertsController extends Controller
 
     public function chats(Request $request)
     {
-        $expert = self::find_expert_by_user_id_or_fail($request->user_id);
         return response()->json([
-            'chats' => $expert->chats,
+            'chats' => self::find_expert_by_user_id_or_fail($request->user_id)->chats,
         ]);
     }
 
@@ -158,26 +157,25 @@ class ExpertsController extends Controller
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
-        foreach ($request->days as $item) {
-            $day = mb_strtolower($item['day']);
+        foreach ($request->days as $work_day) {
+            $day = mb_strtolower($work_day['day']);
             $row = $table->where('day', $day);
             //dd($row); //DEBUG
             if (!is_null($row))
                 $row->delete(); // Delete in order to update
             $row = new Workday;
-            //dd($item); //DEBUG
+            //dd($work_day); //DEBUG
             $row->day = $day;
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
-            if (array_key_exists('is_available', $item))
-                $row->is_available = $item['is_available'];
+            $row->is_available = $work_day['is_available'];
             if ($row->is_available) {
-                $row->start_time_1 = $item['start_time_1'];
-                $row->end_time_1 = $item['end_time_1'];
-                if (array_key_exists('start_time_2', $item))
-                    $row->start_time_2 = $item['start_time_2'];
-                if (array_key_exists('end_time_2', $item))
-                    $row->end_time_2 = $item['end_time_2'];
+                $row->start_time_1 = $work_day['start_time_1'];
+                $row->end_time_1 = $work_day['end_time_1'];
+                if (array_key_exists('start_time_2', $work_day)) {
+                    $row->start_time_2 = $work_day['start_time_2'];
+                    $row->end_time_2 = $work_day['end_time_2'];
+                }
             }
             if (!$row->save())
                 return response()->json([
