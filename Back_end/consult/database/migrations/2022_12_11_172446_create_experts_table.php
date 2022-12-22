@@ -21,8 +21,8 @@ return new class extends Migration {
             $table->double('rating_sum')->default(0);
             $table->double('rating_count')->default(0);
             $table->integer('fav_count')->default(0);
-            $table->text('bio_en');
-            $table->text('bio_ar');
+            $table->text('bio_en')->nullable();
+            $table->text('bio_ar')->nullable();
             $table->double('service_cost');
             // $table->foreignId('appointment_id')->nullable();
             $table->timestamps();
