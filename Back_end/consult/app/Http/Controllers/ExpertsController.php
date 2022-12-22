@@ -19,7 +19,7 @@ class ExpertsController extends Controller
      * @throws ItemNotFoundException 
      * @return mixed Expert
      */
-    public static function get_expert_by_user_id_or_fail($user_id, bool $throws_exception = true)
+    public static function find_expert_by_user_id_or_fail($user_id, bool $throws_exception = true)
     {
         // abandoned the use of scope user  for efficiency issues
         $expert = Expert::whereHas(
@@ -28,55 +28,61 @@ class ExpertsController extends Controller
         )->first();
         if (is_null($expert)) {
             if ($throws_exception)
-                throw new ItemNotFoundException("EXPERT NOT FOUND", 1);
+                throw new ItemNotFoundException(" EXPERT NOT FOUND ", 1);
             return null;
         }
         return $expert;
     }
 
+    protected static function save_expert_and_return(Expert $expert)
+    {
+        if (!$expert->save())
+            return response()->json([
+                'success' => false,
+                'message' => "could not save expert"
+            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'expert saved successfully'
+        ]);
+    }
+
+    //TODO: save expert after editing
+
     public function update(Request $request)
     {
         $atts = array_keys($request->toArray());
-        $expert = ExpertsController::get_expert_by_user_id_or_fail($request->expert_id);
-        foreach($atts as $att) {
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
+        foreach ($atts as $att) {
             if ($att == 'expert_id')
                 continue;
             $expert->$att = $request->$att;
         }
-        $expert->save();
-        return response()->json([
-            'success' => true,
-            'message' => 'expert updated successfully'
-        ]);
+        self::save_expert_and_return($expert);
     }
     public function upload_profile_photo(Request $request)
     {
-        $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // Store profile photo
         $image = $request->file('profile_photo');
-        $path = $image->storeAs('public/profile_photos', $request->expert_id.'.jpg');
+        $path = $image->storeAs('public/profile_photos', $request->expert_id . '.jpg');
         // dd($path); //DEBUG
         $expert->photo_path = $path;
-        return response()->json([
-            'success' => true,
-            'message' => 'profile photo uploaded successfully'
-        ]);
+        self::save_expert_and_return($expert);
     }
 
     public function update_rating(Request $request)
     {
         // get expert by user id
-        $expert = self::get_expert_by_user_id_or_fail($request->user_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->user_id);
         //dd($expert); //DEBUG
 
         // update expert's rating
-        $expert->update([
-            'rating_sum' => $expert->rating_sum + $request->rating,
-            'rating_count' => $expert->rating_count + 1
-        ]);
+        $expert->rating_sum += $request->rating;
+        $expert->rating_count += 1;
 
         //return $expert->toJSON(); //DEBUG
-        return response()->noContent();
+        self::save_expert_and_return($expert);
     }
 
     public function index(Request $request)
@@ -86,7 +92,7 @@ class ExpertsController extends Controller
                 'consulttype' => $request->consulttype,
                 'search' => $request->search
             ])->get();
-        
+
         foreach ($query as $element)
             if (!is_null($element->consultations))
                 $element->consultations = $element->consultations->toArray();
@@ -97,21 +103,21 @@ class ExpertsController extends Controller
     public function show(Request $request)
     {
         return response()->json([
-            'expert' => ExpertsController::get_expert_by_user_id_or_fail($request->expert_id),
+            'expert' => ExpertsController::find_expert_by_user_id_or_fail($request->expert_id),
         ]);
     }
 
     public function schedule(Request $request)
     {
         return response()->json([
-            'schedule' => ExpertsController::get_expert_by_user_id_or_fail($request->expert_id)->appointments,
+            'schedule' => ExpertsController::find_expert_by_user_id_or_fail($request->expert_id)->appointments,
         ]);
 
     }
 
     public function chats(Request $request)
     {
-        $expert = self::get_expert_by_user_id_or_fail($request->user_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->user_id);
         return response()->json([
             'chats' => $expert->chats,
         ]);
@@ -119,13 +125,13 @@ class ExpertsController extends Controller
 
     public function book(Request $request)
     {
-        
+
 
         // time format in 24h
         $appointment = new Appointment;
         $user = UsersController::find_user_or_fail($request->user_id);
-        $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
-        
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+
 
         $appointment->date = $request->date;
         $appointment->start_time = $request->start_time;
@@ -135,15 +141,21 @@ class ExpertsController extends Controller
         $appointment->setRelation('expert', $expert);
         $appointment->expert_id = $expert->id;
 
-        $appointment->save();
-        return $appointment; //DEBUG
-        //return response()->noContent();
+        if (!$appointment->save())
+            return response()->json([
+                'success' => false,
+                'message' => "could not save appointment"
+            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'appointment saved successfully'
+        ]);
     }
 
     public function create_schedule(Request $request)
     {
         // time format in 24h
-        $expert = self::get_expert_by_user_id_or_fail($request->expert_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $item) {
@@ -167,7 +179,11 @@ class ExpertsController extends Controller
                 if (array_key_exists('end_time_2', $item))
                     $row->end_time_2 = $item['end_time_2'];
             }
-            $row->save();
+            if (!$row->save())
+                return response()->json([
+                    'success' => false,
+                    'message' => 'could not updated schedule'
+                ]);
         }
         return response()->json([
             'success' => true,

@@ -88,7 +88,7 @@ class sessionsController extends Controller
             'success' => true,
             'message' => 'successfully logged in',
             'user' => $user,
-            'expert' => ExpertsController::get_expert_by_user_id_or_fail($user->id, false)
+            'expert' => ExpertsController::find_expert_by_user_id_or_fail($user->id, false)
         ]);
     }
     public function logout()
