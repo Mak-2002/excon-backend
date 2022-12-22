@@ -21,7 +21,7 @@ class sessionsController extends Controller
             'password' => ['required'],
         ]);
 
-        if(is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
+        if(!is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
             throw new Exception(" USER ALREADY EXISTS ", 1);
             
 
