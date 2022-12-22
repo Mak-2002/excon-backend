@@ -35,16 +35,14 @@ class sessionsController extends Controller
 
         if (!$user->save())
             return response()->json([
-                'success' => false
+                'success' => false,
+                'message' => "couldn't create user"
             ]);
 
         $expert = new Expert;
         if ($user->is_expert) {
             $request->validate([
-                'address_en' => 'min:5',
-                'address_ar' => 'min:5',
-                'bio_en' => 'required|min:5',
-                'bio_ar' => 'min:5',
+                'bio_en' => 'required',
                 'service_cost' => 'required|numeric',
             ]);
             $expert->address_en = $request->address_en;
@@ -56,7 +54,8 @@ class sessionsController extends Controller
             $expert->user_id = $user->id;
             if (!$expert->save())
                 return response()->json([
-                    'success' => false
+                    'success' => false,
+                    'message' => "created user but couldn't make them expert"
                 ]);
         }
 
