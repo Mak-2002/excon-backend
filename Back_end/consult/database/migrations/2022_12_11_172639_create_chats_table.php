@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id');
-            $table->foreignId('expert_id');
+            $table->foreignId('user_1_id');
+            $table->foreignId('user_2_id');
         });
     }
 

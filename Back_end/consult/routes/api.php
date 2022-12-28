@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentsController;
+use App\Http\Controllers\ChatsController;
 use App\Http\Controllers\ConsultTypesController;
 use App\Http\Controllers\ExpertsController;
 use App\Http\Controllers\MessagesController;
@@ -41,11 +42,16 @@ Route::prefix('expert')->group(function () {
     Route::post('schedule', [ExpertsController::class, 'create_schedule']);
 });
 
+//chats controller
+Route::get('chat', [ChatsController::class, 'get_chat']);
+
 //users routes
 Route::prefix('user')->group(function () {
     Route::get('favorites', [UsersController::class, 'favorites']);
     Route::post('add_favorite', [UsersController::class, 'add_favorite']);
     Route::post('pay', [UsersController::class, 'pay']);
+    Route::post('sendmessage', [UsersController::class, 'send_message']);
+    Route::get('chats', [UsersController::class, 'chats']);
 });
 
 
