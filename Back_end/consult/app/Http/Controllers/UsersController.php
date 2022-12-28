@@ -9,7 +9,7 @@ use Illuminate\Support\ItemNotFoundException;
 class UsersController extends Controller
 {
     /**
-     * tries to find user by its email 
+     * tries to find user by its email , fuck me
      * @param mixed $email
      * @param bool $throws_exception
      * @throws ItemNotFoundException 
