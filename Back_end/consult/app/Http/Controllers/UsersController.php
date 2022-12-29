@@ -114,7 +114,7 @@ class UsersController extends Controller
 
     }
 
-    public function add_favorite(Request $request)
+    public function change_favorite_state(Request $request)
     {
         if ($request->expert_id == $request->user_id)
             return response()->json([
@@ -124,7 +124,19 @@ class UsersController extends Controller
         $user = self::find_user_or_fail($request->user_id);
         $expert = self::find_user_or_fail($request->expert_id)->expert;
         // dd($expert); //DEBUG
-
+        $favorite = Favorite::where('user_id', $user->id)->andWhere('expert_id', $expert->id);
+        if(!is_null($favorite)){
+            $expert->fav_count -= 1;
+            if (!$expert->save() || !$favorite->delete())
+                return response()->json([
+                    'success' => false,
+                    'message' => 'could not unfavor'
+                ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'unfavored successfully'
+            ]);
+        }
         $expert->fav_count += 1;
         // Create favorite instance
         $favorite = new Favorite;
@@ -148,7 +160,7 @@ class UsersController extends Controller
     public function favorites(Request $request)
     {
         $favs = Expert::with('user')->whereHas(
-            'favorableBy',
+            'favorable_by',
             fn ($query) =>
             $query->where('user_id', $request->user_id)
         )->get(); 

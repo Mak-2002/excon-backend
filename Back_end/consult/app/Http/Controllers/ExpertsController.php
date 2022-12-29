@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Appointment, WorkDay, Expert, User};
+use App\Models\{Appointment, WorkDay, Expert, Rating, User};
 use Database\Factories\WorkdayFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -74,15 +74,30 @@ class ExpertsController extends Controller
     public function update_rating(Request $request)
     {
         // get expert by user id
-        $expert = self::find_expert_by_user_id_or_fail($request->user_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id)->expert;
+        $user = UsersController::find_user_or_fail($request->user_id);
         //dd($expert); //DEBUG
+        $rating = Rating::where('user_id', $user->id)->andWhere('expert_id', $expert->id)->first();
+        if(is_null($rating)) {
+            $rating = new Rating;
+            $rating->user_id = $user->id;
+            $rating->expert_id = $expert->id;
+            $expert->rating_count += 1;
+            $rating->value = 0;
+        }
+        $expert->rating_sum += $request->rating - $rating->value;
+        $rating->value = $request->rating;
+        if (!$rating->save() || !$expert->save())
+            return response()->json([
+                'success' => false,
+                'message' => 'could not update rating'
+            ]);
 
-        // update expert's rating
-        $expert->rating_sum += $request->rating;
-        $expert->rating_count += 1;
+        return response()->json([
+            'success' => true,
+            'message' => 'rating updated successfully'
+        ]);
 
-        //return $expert->toJSON(); //DEBUG
-        self::save_expert_and_return($expert);
     }
 
     public function index(Request $request)

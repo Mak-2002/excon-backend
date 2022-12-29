@@ -24,6 +24,10 @@ class Expert extends Model
         'user_id'
     ];
 
+    public function rated_by() {
+        return $this->hasMany(Rating::class);
+    }
+
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
@@ -56,7 +60,7 @@ class Expert extends Model
         )->first();
     }
 
-    public function favorableBy() {
+    public function favorable_by() {
         return $this->hasMany(Favorite::class);
     }
 

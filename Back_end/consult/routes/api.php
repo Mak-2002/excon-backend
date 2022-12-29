@@ -48,7 +48,7 @@ Route::get('chat', [ChatsController::class, 'get_chat']);
 //users routes
 Route::prefix('user')->group(function () {
     Route::get('favorites', [UsersController::class, 'favorites']);
-    Route::post('add_favorite', [UsersController::class, 'add_favorite']);
+    Route::post('changefavorite', [UsersController::class, 'change_favorite_state']);
     Route::post('pay', [UsersController::class, 'pay']);
     Route::post('sendmessage', [UsersController::class, 'send_message']);
     Route::get('chats', [UsersController::class, 'chats']);
