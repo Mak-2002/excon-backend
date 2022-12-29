@@ -71,10 +71,10 @@ class UsersController extends Controller
         $message->receiver_id = $request->receiver_id;
         $message->setRelation('chat', $chat);
         $message->chat_id->$chat->id;
-        if(!$message->save())
+        if (!$message->save())
             return response()->json([
-                'success'=>false,
-                'message'=>'could not send message'
+                'success' => false,
+                'message' => 'could not send message'
             ]);
         return response()->json([
             'success' => true,
@@ -121,8 +121,8 @@ class UsersController extends Controller
                 'success' => false,
                 'message' => "can't add expert to it's favorites"
             ]);
-        $expert = $this->find_user_or_fail($request->expert_id);
-        $user = $this->find_user_or_fail($request->user_id);
+        $user = self::find_user_or_fail($request->user_id);
+        $expert = self::find_user_or_fail($request->expert_id)->expert;
         // dd($expert); //DEBUG
 
         $expert->fav_count += 1;
@@ -132,7 +132,11 @@ class UsersController extends Controller
         $favorite->user_id = $user->id;
         $favorite->setRelation('expert', $expert);
         $favorite->expert_id = $expert->id;
-        $favorite->save();
+        if (!$favorite->save() or !$expert->save())
+            return response()->json([
+                'success' => false,
+                'message' => 'could not add favorite'
+            ]);
 
         // return $favorite->toJSON(); //DEBUG
         return response()->json([
@@ -143,13 +147,11 @@ class UsersController extends Controller
 
     public function favorites(Request $request)
     {
-        $favs = Expert::whereHas(
+        $favs = Expert::with('user')->whereHas(
             'favorableBy',
-            fn($query) =>
-            $query
-                ->where('user_id', $request->user_id)
-        )->get();
+            fn ($query) =>
+            $query->where('user_id', $request->user_id)
+        )->get(); 
         return $favs->toJSON();
     }
-
 }

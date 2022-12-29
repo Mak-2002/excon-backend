@@ -36,7 +36,7 @@ class Expert extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->without('expert');
     }
 
     public function consultations()
@@ -77,7 +77,7 @@ class Expert extends Model
                     'consultations', fn($query) =>
                     $query
                         ->where('type_en', 'like', '%' . $search_phrase . '%')
-                        ->where('type_ar', 'like', '%' . $search_phrase . '%')
+                        ->orWhere('type_ar', 'like', '%' . $search_phrase . '%')
                 )
         );
 
