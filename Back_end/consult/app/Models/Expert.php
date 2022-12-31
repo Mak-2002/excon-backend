@@ -14,7 +14,8 @@ class Expert extends Model
     protected $gaurded = [];
 
     protected $with = [
-        // 'user'
+        'user',
+        'consultations'
     ];
 
     protected $hidden = [

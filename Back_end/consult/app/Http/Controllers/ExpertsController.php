@@ -97,7 +97,6 @@ class ExpertsController extends Controller
             'success' => true,
             'message' => 'rating updated successfully'
         ]);
-
     }
 
     public function index(Request $request)

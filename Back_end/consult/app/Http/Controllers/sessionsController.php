@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{User, Expert};
+use App\Models\{ConsultType, User, Expert};
+use App\Models\Consultation;
 use Doctrine\Inflector\Rules\Turkish\Rules;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,17 +14,16 @@ class sessionsController extends Controller
 {
     public function create(Request $request)
     {
-        
         $request->validate([
             'name_en' => ['required', 'string', 'max:22'],
             'name_ar' => ['required', 'string', 'max:22'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'min:8'],
         ]);
 
-        if(!is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
+        if (!is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
             throw new Exception(" USER ALREADY EXISTS ", 1);
-            
+
 
         $user = new User;
         $user->name_en = $request->name_en;
@@ -52,19 +52,43 @@ class sessionsController extends Controller
             $expert->service_cost = $request->service_cost;
             $expert->setRelation('user', $user);
             $expert->user_id = $user->id;
+
             if (!$expert->save())
                 return response()->json([
                     'success' => false,
                     'message' => "created user but couldn't make them expert"
                 ]);
+            foreach ($request->consultations as $item => $exists) {
+                if (!$exists)
+                    continue;
+
+                $item = mb_strtolower($item);
+                $type = ConsultType::where('type_en', $item)->first();
+                if (is_null($type))
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'could not find [' . $item . '] consultation type in database'
+                    ]);
+                $consult = new Consultation;
+                $consult->setRelation('expert', $expert);
+                $consult->expert_id = $expert->id;
+                $consult->type_en = $type->type_en;
+                $consult->type_ar = $type->type_ar;
+                if (!$consult->save())
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'could not add consultation type [' . $item . ']'
+                    ]);
+            }
         }
 
         auth()->login($user);
-        
+
         return response()->json([
             'success' => true,
             'user' => $user,
-            'expert' => $expert->makeHidden('user')
+            'expert' => $expert->makeHidden('user'),
+            'consultations' => $expert->consultations
         ]);
     }
 
