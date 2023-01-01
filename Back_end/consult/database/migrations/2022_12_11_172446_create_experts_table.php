@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::create('experts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->integer('photo_path')->nullable();
+            $table->text('photo_path')->nullable();
             $table->text('address_en')->nullable();
             $table->text('address_ar')->nullable();
             $table->double('rating_sum')->default(0);

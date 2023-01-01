@@ -62,7 +62,6 @@ class sessionsController extends Controller
                 if (!$exists)
                     continue;
 
-                $item = mb_strtolower($item);
                 $type = ConsultType::where('type_en', $item)->first();
                 if (is_null($type))
                     return response()->json([
@@ -87,8 +86,8 @@ class sessionsController extends Controller
         return response()->json([
             'success' => true,
             'user' => $user,
-            'expert' => $expert->makeHidden('user'),
-            'consultations' => $expert->consultations
+            'expert' => $expert->makeHidden(['user', 'consultations']),
+            'consultations' => $expert->consultations->makeHidden('id')
         ]);
     }
 
