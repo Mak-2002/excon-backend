@@ -38,8 +38,8 @@ Route::prefix('expert')->group(function () {
     Route::post('uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
     Route::get('/', [ExpertsController::class, 'show']);
     Route::post('updaterating', [ExpertsController::class, 'update_rating']);
-    Route::get('schedule', [ExpertsController::class, 'schedule']);
-    Route::post('schedule', [ExpertsController::class, 'create_schedule']);
+    Route::get('appointments', [ExpertsController::class, 'appointments']);
+    Route::post('updateschedule', [ExpertsController::class, 'update_schedule']);
 });
 
 //chats controller

@@ -46,13 +46,11 @@ class UsersController extends Controller
 
     public function send_message(Request $request)
     {
-        $sender_id = $request->sender_id;
-        $receiver_id = $request->receiver_id;
-        $user_1_id = min($sender_id, $receiver_id);
-        $user_2_id = max($sender_id, $receiver_id);
+        $user_1_id = min($request->sender_id, $request->receiver_id);
+        $user_2_id = max($request->sender_id, $request->receiver_id);
         $chat = Chat
             ::where('user_1_id', $user_1_id)
-            ->andWhere('user_2_id', $user_2_id)->first();
+            ->where('user_2_id', $user_2_id)->first();
         if (is_null($chat)) {
             $chat = new Chat;
             $chat->user_1_id = $user_1_id;
@@ -70,7 +68,7 @@ class UsersController extends Controller
         $message->sender_id = $request->sender_id;
         $message->receiver_id = $request->receiver_id;
         $message->setRelation('chat', $chat);
-        $message->chat_id->$chat->id;
+        $message->chat_id=$chat->id;
         if (!$message->save())
             return response()->json([
                 'success' => false,
@@ -84,28 +82,34 @@ class UsersController extends Controller
 
     public function chats(Request $request)
     {
-        $chats = Chat::where('user_1_id', $request->user_id)->orWhere('user_2_id', $request->user_id);
-        return $chats->toJSON();
+        $chats = Chat::where('user_1_id', $request->user_id)->orWhere('user_2_id', $request->user_id)->with('messages')->get();
+        return response()->json($chats);
     }
     public function pay(Request $request)
     {
-        $expert = $this->find_user_or_fail($request->expert_id);
-        $user = $this->find_user_or_fail($request->user_id);
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
+        $user = self::find_user_or_fail($request->user_id);
 
         if ($user->balance < $expert->service_cost)
             return response()->json([
                 'success' => false,
                 'message' => 'not enough balance'
             ]);
-
-        $user2 = $expert->user;
+        $expert_user = $expert->user;
         $user->balance -= $expert->service_cost;
-        $user2->balance += $expert->service_cost;
+        $expert_user->balance += $expert->service_cost;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'payment approved'
-        ]);
+        if (!$user->save() || !$expert->save() || !$expert_user->save())
+            $res = [
+                'success' => false,
+                'message' => 'could not save changes'
+            ];
+        else
+            $res = [
+                'success' => true,
+                'message' => 'payment approved'
+            ];
+        return response()->json([$res]);
 
         // dump(response()->json([
         //     'expert' => $expert,
@@ -116,25 +120,20 @@ class UsersController extends Controller
 
     public function change_favorite_state(Request $request)
     {
-        if ($request->expert_id == $request->user_id)
-            return response()->json([
-                'success' => false,
-                'message' => "can't add expert to it's favorites"
-            ]);
         $user = self::find_user_or_fail($request->user_id);
-        $expert = self::find_user_or_fail($request->expert_id)->expert;
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
-        $favorite = Favorite::where('user_id', $user->id)->andWhere('expert_id', $expert->id);
-        if(!is_null($favorite)){
+        $favorite = Favorite::where('user_id', $user->id)->where('expert_id', $expert->id);
+        if (!is_null($favorite->first())) {
             $expert->fav_count -= 1;
             if (!$expert->save() || !$favorite->delete())
                 return response()->json([
                     'success' => false,
-                    'message' => 'could not unfavor'
+                    'message' => 'could not remove from favorites'
                 ]);
             return response()->json([
-                'success' => false,
-                'message' => 'unfavored successfully'
+                'success' => true,
+                'message' => 'removed from favorites successfully'
             ]);
         }
         $expert->fav_count += 1;
@@ -147,7 +146,7 @@ class UsersController extends Controller
         if (!$favorite->save() or !$expert->save())
             return response()->json([
                 'success' => false,
-                'message' => 'could not add favorite'
+                'message' => 'could not add to favorites'
             ]);
 
         // return $favorite->toJSON(); //DEBUG
@@ -161,9 +160,9 @@ class UsersController extends Controller
     {
         $favs = Expert::with('user')->whereHas(
             'favorable_by',
-            fn ($query) =>
+            fn($query) =>
             $query->where('user_id', $request->user_id)
-        )->get(); 
-        return $favs->toJSON();
+        )->get();
+        return response()->json($favs);
     }
 }

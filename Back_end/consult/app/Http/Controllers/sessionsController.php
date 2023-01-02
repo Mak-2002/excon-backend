@@ -87,7 +87,7 @@ class sessionsController extends Controller
             'success' => true,
             'user' => $user,
             'expert' => $expert->makeHidden(['user', 'consultations']),
-            'consultations' => $expert->consultations->makeHidden('id')
+            'consultations' => $expert->consultations
         ]);
     }
 
@@ -107,12 +107,18 @@ class sessionsController extends Controller
             ]);
         }
         $user = Auth::user();
-        return response()->json([
+        $result = [
             'success' => true,
             'message' => 'successfully logged in',
             'user' => $user,
-            'expert' => ExpertsController::find_expert_by_user_id_or_fail($user->id, false)
-        ]);
+        ];
+        
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($user->id, false)->makeHidden(['user', 'consultations']);
+        if(!is_null($expert)) {
+            $result['expert'] = $expert;
+            $result['consultations'] = $expert->consultations;
+        }
+        return response()->json([$result]);
     }
     public function logout()
     {

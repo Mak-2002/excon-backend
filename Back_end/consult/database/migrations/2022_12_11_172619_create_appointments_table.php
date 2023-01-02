@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('end_time')->nullable();
             $table->foreignId('user_id');
             $table->foreignId('expert_id');
+            $table->text('notes')->nullable();
         });
     }
 

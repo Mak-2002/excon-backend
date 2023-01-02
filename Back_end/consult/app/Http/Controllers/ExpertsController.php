@@ -58,7 +58,16 @@ class ExpertsController extends Controller
                 continue;
             $expert->$att = $request->$att;
         }
-        self::save_expert_and_return($expert);
+        if (!$expert->save())
+            return response()->json([
+                'success' => false,
+                'messsage' => 'could not update expert'
+            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'expert updated successfully',
+            'expert' => $expert
+        ]);
     }
     public function upload_profile_photo(Request $request)
     {
@@ -68,17 +77,28 @@ class ExpertsController extends Controller
         $path = $image->storeAs('public/profile_photos', $request->expert_id . '.jpg');
         // dd($path); //DEBUG
         $expert->photo_path = $path;
-        self::save_expert_and_return($expert);
+        if (!$expert->save())
+            $res = [
+                'success' => false,
+                'message' => 'could not save expert after updating their profile photo'
+            ];
+        else
+            $res = [
+                'success' => true,
+                'message' => 'profile photo updated successfully'
+            ];
+        return response()->json([$res]);
     }
 
     public function update_rating(Request $request)
     {
         // get expert by user id
-        $expert = self::find_expert_by_user_id_or_fail($request->expert_id)->expert;
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         $user = UsersController::find_user_or_fail($request->user_id);
-        //dd($expert); //DEBUG
-        $rating = Rating::where('user_id', $user->id)->andWhere('expert_id', $expert->id)->first();
-        if(is_null($rating)) {
+        // dd($expert->toArray()); //DEBUG
+
+        $rating = Rating::where('user_id', $user->id)->where('expert_id', $expert->id)->first();
+        if (is_null($rating)) {
             $rating = new Rating;
             $rating->user_id = $user->id;
             $rating->expert_id = $expert->id;
@@ -87,12 +107,13 @@ class ExpertsController extends Controller
         }
         $expert->rating_sum += $request->rating - $rating->value;
         $rating->value = $request->rating;
+
         if (!$rating->save() || !$expert->save())
             return response()->json([
                 'success' => false,
                 'message' => 'could not update rating'
             ]);
-
+        // dd($rating->toArray()); // DEBUG
         return response()->json([
             'success' => true,
             'message' => 'rating updated successfully'
@@ -121,10 +142,10 @@ class ExpertsController extends Controller
         ]);
     }
 
-    public function schedule(Request $request)
+    public function appointments(Request $request)
     {
         return response()->json([
-            'schedule' => ExpertsController::find_expert_by_user_id_or_fail($request->expert_id)->appointments,
+            ExpertsController::find_expert_by_user_id_or_fail($request->expert_id)->appointments->makeHidden('expert_id')
         ]);
 
     }
@@ -165,30 +186,29 @@ class ExpertsController extends Controller
         ]);
     }
 
-    public function create_schedule(Request $request)
+    public function update_schedule(Request $request)
     {
         // time format in 24h
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
-        foreach ($request->days as $work_day) {
-            $day = mb_strtolower($work_day['day']);
-            $row = $table->where('day', $day);
+        foreach ($request->days as $request_day_data) {
+            $row = $table->where('day', $request_day_data['day']);
             //dd($row); //DEBUG
             if (!is_null($row))
                 $row->delete(); // Delete in order to update
             $row = new Workday;
             //dd($work_day); //DEBUG
-            $row->day = $day;
+            $row->day = $request_day_data['day'];
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
-            $row->is_available = $work_day['is_available'];
+            $row->is_available = $request_day_data['is_available'];
             if ($row->is_available) {
-                $row->start_time_1 = $work_day['start_time_1'];
-                $row->end_time_1 = $work_day['end_time_1'];
-                if (array_key_exists('start_time_2', $work_day)) {
-                    $row->start_time_2 = $work_day['start_time_2'];
-                    $row->end_time_2 = $work_day['end_time_2'];
+                $row->start_time_1 = $request_day_data['start_time_1'];
+                $row->end_time_1 = $request_day_data['end_time_1'];
+                if (array_key_exists('start_time_2', $request_day_data)) {
+                    $row->start_time_2 = $request_day_data['start_time_2'];
+                    $row->end_time_2 = $request_day_data['end_time_2'];
                 }
             }
             if (!$row->save())

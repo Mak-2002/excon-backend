@@ -9,6 +9,12 @@ class Message extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'updated_at',
+        'chat_id',
+        'id'
+    ];
+
     public function chat()
     {
         return $this->belongsTo(Chat::class);

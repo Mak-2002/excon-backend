@@ -5,7 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use Illuminate\Database\Seeder;
-use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
+use App\Models\{User, Consultation, Appointment, Chat, ConsultType, Expert, Favorite, Message, WorkDay};
 
 class DatabaseSeeder extends Seeder
 {

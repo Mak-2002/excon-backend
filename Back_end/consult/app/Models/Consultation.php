@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Consultation extends Model
 {
     use HasFactory;
+
     public function expert() {
     return $this->belongsTo(Expert::class);
     }
@@ -15,6 +16,7 @@ class Consultation extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
-        'expert_id'
+        'expert_id',
+        'id'
     ];
 }
