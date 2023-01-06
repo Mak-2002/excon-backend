@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Appointment, WorkDay, Expert, Rating, User};
+use App\Models\{Appointment, WorkDay, Expert, Favorite, Rating, User};
 use Database\Factories\WorkdayFactory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ItemNotFoundException;
 use PhpParser\JsonDecoder;
@@ -34,6 +36,22 @@ class ExpertsController extends Controller
         return $expert;
     }
 
+    public function get_schedule(Expert $expert)
+    {
+        $table = WorkDay::where('expert_id', $expert->id);
+        if (!$table->exists())
+            return null;
+        $table = $table->get();
+        $res = [];
+        $res['start_time'] = $table->first()->start_time_1;
+        $res['end_time'] = $table->first()->end_time_1;
+        $days = [];
+        foreach ($table as $element)
+            $days[$element->day] = $element->is_available;
+        $res['days'] = $days;
+        return $res;
+    }
+
     protected static function save_expert_and_return(Expert $expert)
     {
         if (!$expert->save())
@@ -47,17 +65,14 @@ class ExpertsController extends Controller
         ]);
     }
 
-    //TODO: save expert after editing
-
     public function update(Request $request)
     {
         $atts = array_keys($request->toArray());
-        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        foreach ($atts as $att) {
-            if ($att == 'expert_id')
-                continue;
+        $expert = Auth::user()->expert;
+        if (!$expert->exists())
+            throw new ItemNotFoundException(" EXPERT NOT FOUND ", 1);
+        foreach ($atts as $att)
             $expert->$att = $request->$att;
-        }
         if (!$expert->save())
             return response()->json([
                 'success' => false,
@@ -69,9 +84,18 @@ class ExpertsController extends Controller
             'expert' => $expert
         ]);
     }
+
+    public function in_favorites(Request $request)
+    {
+        $user = UsersController::find_user_or_fail($request->user_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+        $fav = Favorite::where('user_id', $request->user_id)->where('expert_id', $request->expert_id);
+        return $fav->exists();
+    }
+
     public function upload_profile_photo(Request $request)
     {
-        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+        $expert = Auth::user()->expert;
         // Store profile photo
         $image = $request->file('profile_photo');
         $path = $image->storeAs('public/profile_photos', $request->expert_id . '.jpg');
@@ -92,9 +116,10 @@ class ExpertsController extends Controller
 
     public function update_rating(Request $request)
     {
+        UsersController::temp_login_for_postman(); // DEBUG
         // get expert by user id
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = UsersController::find_user_or_fail($request->user_id);
+        $user = Auth::user();
         // dd($expert->toArray()); //DEBUG
 
         $rating = Rating::where('user_id', $user->id)->where('expert_id', $expert->id)->first();
@@ -122,11 +147,15 @@ class ExpertsController extends Controller
 
     public function index(Request $request)
     {
+        $curr_expert = Auth::user()->expert;
+        $to_exclude_expert_id = $curr_expert->exists() ? $curr_expert->id : -1;
         $query = Expert::latest()->with(['user', 'consultations'])
             ->filter([
                 'consulttype' => $request->consulttype,
                 'search' => $request->search
-            ])->get();
+            ])
+            ->where('id', '!=', $to_exclude_expert_id)
+            ->get();
 
         foreach ($query as $expert)
             if (!is_null($expert->consultations))
@@ -137,23 +166,35 @@ class ExpertsController extends Controller
 
     public function show(Request $request)
     {
-        return response()->json([
-            'expert' => ExpertsController::find_expert_by_user_id_or_fail($request->expert_id),
-        ]);
+        UsersController::temp_login_for_postman(); // DEBUG
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
+        $current_user = Auth::user();
+        $res = [
+            'success' => true,
+            'message' => 'expert found successfully',
+            'expert' => $expert,
+            'in_favorites' => Favorite
+                ::where('user_id', $current_user->id)
+                ->where('expert_id', $expert->id)
+                ->exists(),
+        ];
+        $res += self::get_schedule($expert);
+        return response()->json([$res]);
     }
 
     public function appointments(Request $request)
     {
+        UsersController::temp_login_for_postman(); // DEBUG
         return response()->json([
-            ExpertsController::find_expert_by_user_id_or_fail($request->expert_id)->appointments->makeHidden('expert_id')
+            Auth::user()->expert->appointments->makeHidden('expert_id')
         ]);
-
     }
 
     public function chats(Request $request)
     {
+        UsersController::temp_login_for_postman(); // DEBUG
         return response()->json([
-            'chats' => self::find_expert_by_user_id_or_fail($request->user_id)->chats,
+            'chats' => Auth::user()->expert->chats,
         ]);
     }
 
@@ -189,26 +230,29 @@ class ExpertsController extends Controller
     public function update_schedule(Request $request)
     {
         // time format in 24h
-        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+
+        UsersController::temp_login_for_postman(); // DEBUG
+        $expert = Auth::user()->expert;
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
-        foreach ($request->days as $request_day_data) {
-            $row = $table->where('day', $request_day_data['day']);
+        foreach ($request->days as $dayName => $is_available) {
+            $row = $table->where('day', $dayName);
             //dd($row); //DEBUG
-            if (!is_null($row))
-                $row->delete(); // Delete in order to update
-            $row = new Workday;
+            if ($row->exists())
+                $row = $row->first();
+            else 
+                $row = new Workday;
             //dd($work_day); //DEBUG
-            $row->day = $request_day_data['day'];
+            $row->day = $dayName;
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
-            $row->is_available = $request_day_data['is_available'];
+            $row->is_available = $is_available;
             if ($row->is_available) {
-                $row->start_time_1 = $request_day_data['start_time_1'];
-                $row->end_time_1 = $request_day_data['end_time_1'];
-                if (array_key_exists('start_time_2', $request_day_data)) {
-                    $row->start_time_2 = $request_day_data['start_time_2'];
-                    $row->end_time_2 = $request_day_data['end_time_2'];
+                $row->start_time_1 = $request->start_time_1;
+                $row->end_time_1 = $request->end_time_1;
+                if ($request->start_time_2 ?? false) {
+                    $row->start_time_2 = $request->start_time_2;
+                    $row->end_time_2 = $request->end_time_2;
                 }
             }
             if (!$row->save())

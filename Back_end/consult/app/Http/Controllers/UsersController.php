@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\{User, Consultation, Appointment, Chat, Expert, Favorite, Message, WorkDay};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ItemNotFoundException;
 
 class UsersController extends Controller
@@ -43,11 +45,21 @@ class UsersController extends Controller
         return $user;
     }
 
+    public static function temp_login_for_postman() 
+    { // DEBUG
+        if (App::hasDebugModeEnabled())
+            Auth::attempt([
+                'email' => 'love@gmail.com',
+                'password' => 'helloguyswelcometomyyoutubechannel'
+            ]); // (Just Because Postman Doesn't save session data in)
+    }
 
     public function send_message(Request $request)
     {
-        $user_1_id = min($request->sender_id, $request->receiver_id);
-        $user_2_id = max($request->sender_id, $request->receiver_id);
+        self::temp_login_for_postman(); // DEBUG
+        $user = Auth::user();
+        $user_1_id = min($user->id, $request->receiver_id);
+        $user_2_id = max($user->id, $request->receiver_id);
         $chat = Chat
             ::where('user_1_id', $user_1_id)
             ->where('user_2_id', $user_2_id)->first();
@@ -65,10 +77,10 @@ class UsersController extends Controller
         }
         $message = new Message;
         $message->content = $request->content;
-        $message->sender_id = $request->sender_id;
+        $message->sender_id = $user->id;
         $message->receiver_id = $request->receiver_id;
         $message->setRelation('chat', $chat);
-        $message->chat_id=$chat->id;
+        $message->chat_id = $chat->id;
         if (!$message->save())
             return response()->json([
                 'success' => false,
@@ -82,13 +94,16 @@ class UsersController extends Controller
 
     public function chats(Request $request)
     {
-        $chats = Chat::where('user_1_id', $request->user_id)->orWhere('user_2_id', $request->user_id)->with('messages')->get();
+        self::temp_login_for_postman(); // DEBUG
+        $user_id = Auth::user()->id;
+        $chats = Chat::where('user_1_id', $user_id)->orWhere('user_2_id', $user_id)->with('messages')->get();
         return response()->json($chats);
     }
     public function pay(Request $request)
     {
+        self::temp_login_for_postman();
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = self::find_user_or_fail($request->user_id);
+        $user = User::find(Auth::user()->id);
 
         if ($user->balance < $expert->service_cost)
             return response()->json([
@@ -102,7 +117,7 @@ class UsersController extends Controller
         if (!$user->save() || !$expert->save() || !$expert_user->save())
             $res = [
                 'success' => false,
-                'message' => 'could not save changes'
+                'message' => 'could not make payment'
             ];
         else
             $res = [
@@ -120,11 +135,12 @@ class UsersController extends Controller
 
     public function change_favorite_state(Request $request)
     {
-        $user = self::find_user_or_fail($request->user_id);
+        self::temp_login_for_postman(); // DEBUG
+        $user = Auth::user();
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $favorite = Favorite::where('user_id', $user->id)->where('expert_id', $expert->id);
-        if (!is_null($favorite->first())) {
+        if ($favorite->exists()) {
             $expert->fav_count -= 1;
             if (!$expert->save() || !$favorite->delete())
                 return response()->json([
@@ -158,10 +174,11 @@ class UsersController extends Controller
 
     public function favorites(Request $request)
     {
+        self::temp_login_for_postman(); // DEBUG
         $favs = Expert::with('user')->whereHas(
             'favorable_by',
             fn($query) =>
-            $query->where('user_id', $request->user_id)
+            $query->where('user_id', Auth::user()->id)
         )->get();
         return response()->json($favs);
     }

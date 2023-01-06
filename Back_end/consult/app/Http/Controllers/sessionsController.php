@@ -97,10 +97,10 @@ class sessionsController extends Controller
         $attributes = $request->validate([
 
             'email' => 'required|email',
-            'password' => 'required|min:3|max:255',
+            'password' => 'required|min:8|max:255',
         ]);
         $attributes['email'] = mb_strtolower($attributes['email']);
-        if (!auth()->attempt($attributes)) {
+        if (!Auth::attempt($attributes)) {
             return response([
                 'success' => false,
                 'message' => 'unauthorizaed',

@@ -1,0 +1,100 @@
+
+Route::post('register', [sessionsController::class, 'create']);
+{
+    "name_en":"",
+    "name_ar":"",
+    "email":"xx@emailProvider.com",
+    "password":"min:8chars",
+    "bio_en":"",
+    "phone":"",
+    "service_cost": 15,
+    "consultations":{
+        "Medical":1,
+        "Vocational":1,
+        "XX":0
+    }
+}
+
+Route::post('login', [sessionsController::class, 'login'])->name('login');
+{
+    "email":"xx@emailProvider.com",
+    "password":"min:8chars"
+}   
+
+Route::post('logout', [sessionsController::class, 'logout']);
+
+//experts routes
+Route::get('experts', [ExpertsController::class, 'index']);
+
+Route::prefix('expert')->group(function () {
+    Route::post('update', [ExpertsController::class, 'update']);
+    {
+        "bio_en":"I love me"
+    }
+    Route::post('uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
+    params: profile_photo  ->  file.jpg
+
+    Route::get('/', [ExpertsController::class, 'show']);
+    params: expert_id
+
+
+    Route::post('updaterating', [ExpertsController::class, 'update_rating']);
+    {
+        "expert_id":111,
+        "rating":4
+    }
+
+    Route::get('appointments', [ExpertsController::class, 'appointments']);
+    params:  expert_id
+
+
+    Route::post('updateschedule', [ExpertsController::class, 'update_schedule']);
+    {
+        "start_time_1": "15:00",
+        "end_time_1": "22:00",
+        "days": {
+            "Sunday": 0,
+            "Monday": 1,
+            "Tuesday": 1,
+            "Wednesday": 0,
+            "Thursday": 1,
+            "Friday": 0,
+            "Saturday": 1
+        }
+    }
+    
+});
+
+//chats controller
+Route::get('chat', [ChatsController::class, 'get_chat']);
+params: expert_id
+
+//users routes
+Route::prefix('user')->group(function () {
+    Route::get('favorites', [UsersController::class, 'favorites']);
+    params: null
+
+
+    Route::post('changefavorite', [UsersController::class, 'change_favorite_state']);
+    {
+        "expert_id":70
+    }
+
+    Route::post('pay', [UsersController::class, 'pay']);
+    {
+        "expert_id":70
+    }
+
+
+    Route::post('sendmessage', [UsersController::class, 'send_message']);
+    {
+        "receiver_id":110,
+        "content":"hello guys welcome to my youtube channel"
+    }
+
+
+    Route::get('chats', [UsersController::class, 'chats']);
+    params: null
+
+
+});
