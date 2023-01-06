@@ -113,8 +113,9 @@ class sessionsController extends Controller
             'user' => $user,
         ];
         
-        $expert = ExpertsController::find_expert_by_user_id_or_fail($user->id, false)->makeHidden(['user', 'consultations']);
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($user->id, false);
         if(!is_null($expert)) {
+            $expert->makeHidden(['user', 'consultations']);
             $result['expert'] = $expert;
             $result['consultations'] = $expert->consultations;
         }
