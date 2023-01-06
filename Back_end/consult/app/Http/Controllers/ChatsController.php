@@ -10,9 +10,8 @@ class ChatsController extends Controller
 {
     public function get_chat(Request $request)
     {
-        $user = Auth::user();
-        $user_1_id = min($user->id, $request->expert_id);
-        $user_2_id = max($user->id, $request->expert_id);
+        $user_1_id = min($request->user_id, $request->expert_id);
+        $user_2_id = max($request->user_id, $request->expert_id);
         $chat = Chat::where('user_1_id', $user_1_id)->where('user_2_id', $user_2_id)->first();
         if (!$chat->exists())
             $res = [

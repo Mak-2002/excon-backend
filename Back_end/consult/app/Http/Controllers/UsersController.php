@@ -56,10 +56,9 @@ class UsersController extends Controller
 
     public function send_message(Request $request)
     {
-        self::temp_login_for_postman(); // DEBUG
-        $user = Auth::user();
-        $user_1_id = min($user->id, $request->receiver_id);
-        $user_2_id = max($user->id, $request->receiver_id);
+        
+        $user_1_id = min($request->sender_id, $request->receiver_id);
+        $user_2_id = max($request->sender_id, $request->receiver_id);
         $chat = Chat
             ::where('user_1_id', $user_1_id)
             ->where('user_2_id', $user_2_id)->first();
@@ -77,7 +76,7 @@ class UsersController extends Controller
         }
         $message = new Message;
         $message->content = $request->content;
-        $message->sender_id = $user->id;
+        $message->sender_id = $request->sender_id;
         $message->receiver_id = $request->receiver_id;
         $message->setRelation('chat', $chat);
         $message->chat_id = $chat->id;
@@ -94,16 +93,15 @@ class UsersController extends Controller
 
     public function chats(Request $request)
     {
-        self::temp_login_for_postman(); // DEBUG
-        $user_id = Auth::user()->id;
-        $chats = Chat::where('user_1_id', $user_id)->orWhere('user_2_id', $user_id)->with('messages')->get();
+        
+        $chats = Chat::where('user_1_id', $request->user_id)->orWhere('user_2_id', $request->user_id)->with('messages')->get();
         return response()->json($chats);
     }
     public function pay(Request $request)
     {
-        self::temp_login_for_postman();
+        
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = User::find(Auth::user()->id);
+        $user = User::find($request->user_id);
 
         if ($user->balance < $expert->service_cost)
             return response()->json([
@@ -135,8 +133,8 @@ class UsersController extends Controller
 
     public function change_favorite_state(Request $request)
     {
-        self::temp_login_for_postman(); // DEBUG
-        $user = Auth::user();
+        
+        $user = User::find($request->user_id);
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $favorite = Favorite::where('user_id', $user->id)->where('expert_id', $expert->id);
@@ -174,11 +172,11 @@ class UsersController extends Controller
 
     public function favorites(Request $request)
     {
-        self::temp_login_for_postman(); // DEBUG
+        
         $favs = Expert::with('user')->whereHas(
             'favorable_by',
             fn($query) =>
-            $query->where('user_id', Auth::user()->id)
+            $query->where('user_id', $request->user_id)
         )->get();
         return response()->json($favs);
     }

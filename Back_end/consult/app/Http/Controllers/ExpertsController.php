@@ -68,11 +68,14 @@ class ExpertsController extends Controller
     public function update(Request $request)
     {
         $atts = array_keys($request->toArray());
-        $expert = Auth::user()->expert;
+        $expert = User::find($request->expert_id)->expert;
         if (!$expert->exists())
             throw new ItemNotFoundException(" EXPERT NOT FOUND ", 1);
-        foreach ($atts as $att)
+        foreach ($atts as $att) {
+            if ($att == 'expert_id')
+                continue;
             $expert->$att = $request->$att;
+        }
         if (!$expert->save())
             return response()->json([
                 'success' => false,
@@ -95,7 +98,7 @@ class ExpertsController extends Controller
 
     public function upload_profile_photo(Request $request)
     {
-        $expert = Auth::user()->expert;
+        $expert = User::find($request->expert_id)->expert;
         // Store profile photo
         $image = $request->file('profile_photo');
         $path = $image->storeAs('public/profile_photos', $request->expert_id . '.jpg');
@@ -116,10 +119,10 @@ class ExpertsController extends Controller
 
     public function update_rating(Request $request)
     {
-        UsersController::temp_login_for_postman(); // DEBUG
+
         // get expert by user id
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = Auth::user();
+        $user = User::find($request->user_id);
         // dd($expert->toArray()); //DEBUG
 
         $rating = Rating::where('user_id', $user->id)->where('expert_id', $expert->id)->first();
@@ -147,7 +150,8 @@ class ExpertsController extends Controller
 
     public function index(Request $request)
     {
-        $curr_expert = Auth::user()->expert;
+        UsersController::temp_login_for_postman();
+        $curr_expert = User::find($request->user_id)->expert;
         $to_exclude_expert_id = $curr_expert->exists() ? $curr_expert->id : -1;
         $query = Expert::latest()->with(['user', 'consultations'])
             ->filter([
@@ -166,9 +170,9 @@ class ExpertsController extends Controller
 
     public function show(Request $request)
     {
-        UsersController::temp_login_for_postman(); // DEBUG
+
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $current_user = Auth::user();
+        $current_user = User::find($request->user_id);
         $res = [
             'success' => true,
             'message' => 'expert found successfully',
@@ -178,23 +182,23 @@ class ExpertsController extends Controller
                 ->where('expert_id', $expert->id)
                 ->exists(),
         ];
-        $res += self::get_schedule($expert);
+        if (!is_null(self::get_schedule($expert)))
+            $res += self::get_schedule($expert);
         return response()->json([$res]);
     }
 
     public function appointments(Request $request)
     {
-        UsersController::temp_login_for_postman(); // DEBUG
-        return response()->json([
-            Auth::user()->expert->appointments->makeHidden('expert_id')
-        ]);
+        return response()->json(
+            User::find($request->expert_id)->expert->appointments->makeHidden('expert_id')
+        );
     }
 
     public function chats(Request $request)
     {
-        UsersController::temp_login_for_postman(); // DEBUG
+
         return response()->json([
-            'chats' => Auth::user()->expert->chats,
+            'chats' => User::find($request->user_id)->expert->chats,
         ]);
     }
 
@@ -231,17 +235,12 @@ class ExpertsController extends Controller
     {
         // time format in 24h
 
-        UsersController::temp_login_for_postman(); // DEBUG
-        $expert = Auth::user()->expert;
+
+        $expert = User::find($request->expert_id)->expert;
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $dayName => $is_available) {
-            $row = $table->where('day', $dayName);
-            //dd($row); //DEBUG
-            if ($row->exists())
-                $row = $row->first();
-            else 
-                $row = new Workday;
+            $row = new Workday;
             //dd($work_day); //DEBUG
             $row->day = $dayName;
             $row->setRelation('expert', $expert);
