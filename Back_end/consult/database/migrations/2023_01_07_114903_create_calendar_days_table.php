@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('calendar_days', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('expert_id');
             $table->date('date');
             $table->integer('available_hours_count')->default(0);
         });

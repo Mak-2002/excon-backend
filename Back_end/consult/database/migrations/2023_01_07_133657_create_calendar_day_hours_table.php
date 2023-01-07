@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('calendar_day_id');
-            $table->time('hour');
+            $table->integer('hour');
             $table->integer('state');
             /*
             -1 -> not in schedule

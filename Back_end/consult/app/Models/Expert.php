@@ -49,7 +49,7 @@ class Expert extends Model
         return $this->hasMany(Consultation::class);
     }
 
-    public function work_days()
+    public function schedule()
     {
         return $this->hasMany(WorkDay::class);
     }

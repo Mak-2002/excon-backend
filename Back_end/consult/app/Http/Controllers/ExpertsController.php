@@ -118,6 +118,7 @@ class ExpertsController extends Controller
                 'message' => 'profile photo updated successfully'
             ];
         return response()->json([$res]);
+        
     }
 
     public function update_rating(Request $request)
@@ -232,7 +233,7 @@ class ExpertsController extends Controller
     public function update_schedule(Request $request)
     {
         // time format in 24h
-
+        
 
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
@@ -258,6 +259,7 @@ class ExpertsController extends Controller
                     'message' => 'could not updated schedule'
                 ]);
         }
+        
         return response()->json([
             'success' => true,
             'message' => 'schedule updated successfully'
