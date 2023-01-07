@@ -9,9 +9,7 @@ Route::post('register', [sessionsController::class, 'create']);
     "phone":"",
     "service_cost": 15,
     "consultations":{
-        "Medical":1,
-        "Vocational":1,
-        "XX":0
+        1,0,1...
     }
 }
 

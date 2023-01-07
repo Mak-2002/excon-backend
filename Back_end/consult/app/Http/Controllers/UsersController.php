@@ -39,24 +39,24 @@ class UsersController extends Controller
         $user = User::find($user_id);
         if (is_null($user)) {
             if ($throws_exception)
-                throw new ItemNotFoundException("USER NOT FOUND", 1);
+                throw new ItemNotFoundException(" USER NOT FOUND ", 1);
             return null;
         }
         return $user;
     }
 
-    public static function temp_login_for_postman() 
+    public static function temp_login_for_postman()
     { // DEBUG
         if (App::hasDebugModeEnabled())
             Auth::attempt([
                 'email' => 'love@gmail.com',
                 'password' => 'helloguyswelcometomyyoutubechannel'
-            ]); // (Just Because Postman Doesn't save session data in)
+            ]); // (Because Postman Doesn't save session data in)
     }
 
     public function send_message(Request $request)
     {
-        
+
         $user_1_id = min($request->sender_id, $request->receiver_id);
         $user_2_id = max($request->sender_id, $request->receiver_id);
         $chat = Chat
@@ -93,15 +93,18 @@ class UsersController extends Controller
 
     public function chats(Request $request)
     {
-        
         $chats = Chat::where('user_1_id', $request->user_id)->orWhere('user_2_id', $request->user_id)->with('messages')->get();
+        foreach ($chats as $chat) {
+            $other_user_id = $chat->user_1_id;
+            if($other_user_id == $request->user_id) $other_user_id = $chat->user_2_id;
+            $chat['other_user_end'] = self::find_user_or_fail($other_user_id)->name_en;
+        }
         return response()->json($chats);
     }
     public function pay(Request $request)
     {
-        
+        $user = UsersController::find_user_or_fail($request->user_id);
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = User::find($request->user_id);
 
         if ($user->balance < $expert->service_cost)
             return response()->json([
@@ -122,19 +125,16 @@ class UsersController extends Controller
                 'success' => true,
                 'message' => 'payment approved'
             ];
-        return response()->json([$res]);
-
-        // dump(response()->json([
+        // dd(response()->json([
         //     'expert' => $expert,
         //     'user' => $user
-        // ])); //DEBUG    
-
+        // ])); //DEBUG  
+        return response()->json([$res]);
     }
 
     public function change_favorite_state(Request $request)
     {
-        
-        $user = User::find($request->user_id);
+        $user = self::find_user_or_fail($request->user_id);
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $favorite = Favorite::where('user_id', $user->id)->where('expert_id', $expert->id);
@@ -172,7 +172,7 @@ class UsersController extends Controller
 
     public function favorites(Request $request)
     {
-        
+
         $favs = Expert::with('user')->whereHas(
             'favorable_by',
             fn($query) =>

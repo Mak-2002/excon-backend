@@ -58,15 +58,18 @@ class sessionsController extends Controller
                     'success' => false,
                     'message' => "created user but couldn't make them expert"
                 ]);
-            foreach ($request->consultations as $item => $exists) {
-                if (!$exists)
+            $count = 1;
+            foreach ($request->consultations as $exists) {
+                if(!$exists) 
+                {
+                    $count++;
                     continue;
-
-                $type = ConsultType::where('type_en', $item)->first();
+                }
+                $type = ConsultType::find($count);
                 if (is_null($type))
                     return response()->json([
                         'success' => false,
-                        'message' => 'could not find [' . $item . '] consultation type in database'
+                        'message' => 'could not find' + $count + 'th consultation item in database' //TODO
                     ]);
                 $consult = new Consultation;
                 $consult->setRelation('expert', $expert);
@@ -76,8 +79,9 @@ class sessionsController extends Controller
                 if (!$consult->save())
                     return response()->json([
                         'success' => false,
-                        'message' => 'could not add consultation type [' . $item . ']'
+                        'message' => 'could not add' + $count + 'th  consultation item'
                     ]);
+                $count++;
             }
         }
 
@@ -90,7 +94,6 @@ class sessionsController extends Controller
             'consultations' => $expert->consultations
         ]);
     }
-
 
     public function login(Request $request)
     {
@@ -112,7 +115,7 @@ class sessionsController extends Controller
             'message' => 'successfully logged in',
             'user' => $user,
         ];
-        
+
         $expert = ExpertsController::find_expert_by_user_id_or_fail($user->id, false);
         if(!is_null($expert)) {
             $expert->makeHidden(['user', 'consultations']);
@@ -136,5 +139,4 @@ class sessionsController extends Controller
 //         'messsage'=>'wrong informations'
 //     ]);
 // }
-
 // return redirect('/')->with('success', 'welcome back');

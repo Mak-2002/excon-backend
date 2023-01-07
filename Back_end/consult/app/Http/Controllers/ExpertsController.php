@@ -68,7 +68,7 @@ class ExpertsController extends Controller
     public function update(Request $request)
     {
         $atts = array_keys($request->toArray());
-        $expert = User::find($request->expert_id)->expert;
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         if (!$expert->exists())
             throw new ItemNotFoundException(" EXPERT NOT FOUND ", 1);
         foreach ($atts as $att) {
@@ -92,16 +92,19 @@ class ExpertsController extends Controller
     {
         $user = UsersController::find_user_or_fail($request->user_id);
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $fav = Favorite::where('user_id', $request->user_id)->where('expert_id', $request->expert_id);
+        $fav = Favorite::where('user_id', $request->user_id)->where('expert_id', $expert->id);
         return $fav->exists();
     }
 
     public function upload_profile_photo(Request $request)
     {
-        $expert = User::find($request->expert_id)->expert;
+        $expert_id = (int) $request->expert_id;
+        // dd(gettype($request->expert_id));
+        $expert = self::find_expert_by_user_id_or_fail($expert_id);
         // Store profile photo
         $image = $request->file('profile_photo');
-        $path = $image->storeAs('public/profile_photos', $request->expert_id . '.jpg');
+        $path = $image->storeAs('public/profile_photos', $expert_id . '.jpg');
+        dd(asset($path));
         // dd($path); //DEBUG
         $expert->photo_path = $path;
         if (!$expert->save())
@@ -119,10 +122,8 @@ class ExpertsController extends Controller
 
     public function update_rating(Request $request)
     {
-
-        // get expert by user id
+        $user = UsersController::find_user_or_fail($request->user_id);
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $user = User::find($request->user_id);
         // dd($expert->toArray()); //DEBUG
 
         $rating = Rating::where('user_id', $user->id)->where('expert_id', $expert->id)->first();
@@ -150,9 +151,10 @@ class ExpertsController extends Controller
 
     public function index(Request $request)
     {
-        UsersController::temp_login_for_postman();
-        $curr_expert = User::find($request->user_id)->expert;
-        $to_exclude_expert_id = $curr_expert->exists() ? $curr_expert->id : -1;
+        $curr_expert = self::find_expert_by_user_id_or_fail($request->expert_id, false);
+        $to_exclude_expert_id = -1;
+        if (!is_null($curr_expert))
+            $to_exclude_expert_id = $curr_expert->id;
         $query = Expert::latest()->with(['user', 'consultations'])
             ->filter([
                 'consulttype' => $request->consulttype,
@@ -170,9 +172,8 @@ class ExpertsController extends Controller
 
     public function show(Request $request)
     {
-
-        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $current_user = User::find($request->user_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+        $current_user = UsersController::find_user_or_fail($request->expert_id);
         $res = [
             'success' => true,
             'message' => 'expert found successfully',
@@ -190,27 +191,24 @@ class ExpertsController extends Controller
     public function appointments(Request $request)
     {
         return response()->json(
-            User::find($request->expert_id)->expert->appointments->makeHidden('expert_id')
+            self::find_expert_by_user_id_or_fail($request->expert_id)->expert->appointments->makeHidden('expert_id')
         );
     }
 
     public function chats(Request $request)
     {
-
         return response()->json([
-            'chats' => User::find($request->user_id)->expert->chats,
+            'chats' => self::find_expert_by_user_id_or_fail($request->expert_id)->chats,
         ]);
     }
 
     public function book(Request $request)
     {
 
-
         // time format in 24h
         $appointment = new Appointment;
         $user = UsersController::find_user_or_fail($request->user_id);
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-
 
         $appointment->date = $request->date;
         $appointment->start_time = $request->start_time;
@@ -236,7 +234,7 @@ class ExpertsController extends Controller
         // time format in 24h
 
 
-        $expert = User::find($request->expert_id)->expert;
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $dayName => $is_available) {
