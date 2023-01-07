@@ -15,10 +15,10 @@ return new class extends Migration {
         Schema::create('work_days', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('day');
+            $table->string('day_of_week');
             $table->boolean('is_available')->default(true);
-            $table->time('start_time_1')->nullable();
-            $table->time('end_time_1')->nullable();
+            $table->time('start_time_1')->default(0);
+            $table->time('end_time_1')->default(24);
             $table->time('start_time_2')->nullable();
             $table->time('end_time_2')->nullable();
             $table->foreignId('expert_id');

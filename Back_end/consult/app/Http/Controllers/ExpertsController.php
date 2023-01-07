@@ -234,14 +234,13 @@ class ExpertsController extends Controller
     {
         // time format in 24h
         
-
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
-        foreach ($request->days as $dayName => $is_available) {
+        foreach ($request->days as $dayNum => $is_available) {
             $row = new Workday;
             //dd($work_day); //DEBUG
-            $row->day = $dayName;
+            $row->day = $dayNum;
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
             $row->is_available = $is_available;
@@ -259,6 +258,7 @@ class ExpertsController extends Controller
                     'message' => 'could not updated schedule'
                 ]);
         }
+        CalendarController::update_hours($expert);
         
         return response()->json([
             'success' => true,

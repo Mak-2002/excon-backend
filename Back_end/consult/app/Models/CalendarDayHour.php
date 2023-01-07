@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class CalendarDayHour extends Model
 {
     use HasFactory;
+
+    public function calendar_day() {
+        return $this->belongsTo(CalendarDay::class);
+    }
+
+    public function occupied() {
+        return $this->state == 1;
+    }
+
+    
 }
