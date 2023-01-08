@@ -20,8 +20,8 @@ class AppointmentFactory extends Factory
     {
         return [
             'date' => $this->faker->date,
-            'start_hour' => $this->faker->time,
-            'end_hour' => $this->faker->time,
+            'start_hour' => $this->faker->numberBetween(0,23),
+            'end_hour' => $this->faker->numberBetween(0,23),
             'user_id' => User::factory(),
             'expert_id' => Expert::factory()
         ];
