@@ -56,7 +56,6 @@ class UsersController extends Controller
 
     public function send_message(Request $request)
     {
-
         $user_1_id = min($request->sender_id, $request->receiver_id);
         $user_2_id = max($request->sender_id, $request->receiver_id);
         $chat = Chat
