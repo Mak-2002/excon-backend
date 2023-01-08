@@ -24,7 +24,10 @@ return new class extends Migration {
             $table->text('bio_en')->nullable();
             $table->text('bio_ar')->nullable();
             $table->double('service_cost');
-            // $table->foreignId('appointment_id')->nullable();
+            $table->integer('start_time_1')->default(0);
+            $table->integer('start_time_2')->default(24);
+            $table->integer('end_time_1')->default(0);
+            $table->integer('end_time_2')->default(0);
             $table->timestamps();
         });
     }

@@ -16,9 +16,8 @@ return new class extends Migration
         Schema::create('appointments', function (Blueprint $table) {
              $table->id();
             $table->timestamps();
-            $table->date('date');
-            $table->time('start_time');
-            $table->time('end_time')->nullable();
+            $table->dateTime('start_date');
+            $table->dateTime('end_date')->nullable();
             $table->foreignId('user_id');
             $table->foreignId('expert_id');
             $table->text('notes')->nullable();

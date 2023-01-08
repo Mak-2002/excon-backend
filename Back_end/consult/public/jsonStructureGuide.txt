@@ -55,6 +55,8 @@ Route::prefix('expert')->group(function () {
         "expert_id":111,
         "start_time_1": "15:00",
         "end_time_1": "22:00",
+        "start_time_2": "15:00",
+        "end_time_2": "22:00",
         "days": {
             "Sunday": 0,
             "Monday": 1,

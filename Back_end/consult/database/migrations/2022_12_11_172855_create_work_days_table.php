@@ -16,11 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('day_of_week');
-            $table->boolean('is_available')->default(true);
-            $table->time('start_time_1')->default(0);
-            $table->time('end_time_1')->default(24);
-            $table->time('start_time_2')->nullable();
-            $table->time('end_time_2')->nullable();
+            $table->boolean('is_available')->default(false);
             $table->foreignId('expert_id');
         });
     }

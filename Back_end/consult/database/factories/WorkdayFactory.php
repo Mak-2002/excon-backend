@@ -19,8 +19,6 @@ class WorkdayFactory extends Factory
     {
         return [
             'day' => $this->faker->dayOfWeek,
-            'start_time_1' => $this->faker->time,
-            'end_time_1' => $this->faker->time,
             'expert_id' => Expert::factory(),
         ];
     }

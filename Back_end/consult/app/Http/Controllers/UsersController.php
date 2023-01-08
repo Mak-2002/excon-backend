@@ -115,7 +115,7 @@ class UsersController extends Controller
         $user->balance -= $expert->service_cost;
         $expert_user->balance += $expert->service_cost;
 
-        if (!$user->save() || !$expert->save() || !$expert_user->save())
+        if (!$user->save() || !$expert_user->save())
             $res = [
                 'success' => false,
                 'message' => 'could not make payment'

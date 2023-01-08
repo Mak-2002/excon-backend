@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Appointment, WorkDay, Expert, Favorite, Rating, User};
+use Carbon\Carbon;
 use Database\Factories\WorkdayFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -38,17 +39,12 @@ class ExpertsController extends Controller
 
     public function get_schedule(Expert $expert)
     {
-        $table = WorkDay::where('expert_id', $expert->id);
-        if (!$table->exists())
-            return null;
-        $table = $table->get();
+        $week_availability = WorkDay::whereHas('expert', $expert);
+        if (is_null($week_availability))
+            return array_fill(0, 7, false);
         $res = [];
-        $res['start_time'] = $table->first()->start_time_1;
-        $res['end_time'] = $table->first()->end_time_1;
-        $days = [];
-        foreach ($table as $element)
-            $days[$element->day] = $element->is_available;
-        $res['days'] = $days;
+        foreach ($week_availability as $day)
+            array_push($res, $day->is_available);
         return $res;
     }
 
@@ -98,15 +94,19 @@ class ExpertsController extends Controller
 
     public function upload_profile_photo(Request $request)
     {
-        $expert_id = (int) $request->expert_id;
+        $request->validate([
+            'image' => ['image', 'mimes:jpeg,png,bmp,jpg,gif,svg,jpeg']
+        ]);
         // dd(gettype($request->expert_id));
-        $expert = self::find_expert_by_user_id_or_fail($expert_id);
+        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
         // Store profile photo
         $image = $request->file('profile_photo');
-        $path = $image->storeAs('public/profile_photos', $expert_id . '.jpg');
-        dd(asset($path));
+        $image_name = $request->expert_id . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('profile_photos'), $image_name);
+        $image_path = 'profile_photos/' . $image_name;
+        dd(asset($image_path));
         // dd($path); //DEBUG
-        $expert->photo_path = $path;
+        $expert->photo_path = $image_path;
         if (!$expert->save())
             $res = [
                 'success' => false,
@@ -118,7 +118,7 @@ class ExpertsController extends Controller
                 'message' => 'profile photo updated successfully'
             ];
         return response()->json([$res]);
-        
+
     }
 
     public function update_rating(Request $request)
@@ -184,8 +184,7 @@ class ExpertsController extends Controller
                 ->where('expert_id', $expert->id)
                 ->exists(),
         ];
-        if (!is_null(self::get_schedule($expert)))
-            $res += self::get_schedule($expert);
+        $week_availability = self::get_schedule($expert);
         return response()->json([$res]);
     }
 
@@ -211,9 +210,10 @@ class ExpertsController extends Controller
         $user = UsersController::find_user_or_fail($request->user_id);
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
 
-        $appointment->date = $request->date;
-        $appointment->start_time = $request->start_time;
-        $appointment->end_time = $request->end_time;
+        $start_date = Carbon::parse($request->date);
+        $end_date = Carbon::parse($request->date)->addHour();
+        $appointment->start_date = $start_date;
+        $appointment->end_date = $end_date;
         $appointment->setRelation('user', $user);
         $appointment->user_id = $user->id;
         $appointment->setRelation('expert', $expert);
@@ -233,8 +233,14 @@ class ExpertsController extends Controller
     public function update_schedule(Request $request)
     {
         // time format in 24h
-        
+
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
+        $expert->start_time_1 = $request->start_time_1;
+        $expert->end_time_1 = $request->end_time_1;
+        if ($request->start_time_2 ?? false) {
+            $expert->start_time_2 = $request->start_time_2;
+            $expert->end_time_2 = $request->end_time_2;
+        }
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $dayNum => $is_available) {
@@ -244,22 +250,20 @@ class ExpertsController extends Controller
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
             $row->is_available = $is_available;
-            if ($row->is_available) {
-                $row->start_time_1 = $request->start_time_1;
-                $row->end_time_1 = $request->end_time_1;
-                if ($request->start_time_2 ?? false) {
-                    $row->start_time_2 = $request->start_time_2;
-                    $row->end_time_2 = $request->end_time_2;
-                }
-            }
             if (!$row->save())
                 return response()->json([
                     'success' => false,
                     'message' => 'could not updated schedule'
                 ]);
         }
+        if (!$expert->save())
+            return response()->json([
+                'success' => false,
+                'message' => 'could not modify expert schedule'
+            ]);
+
         CalendarController::update_hours($expert);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'schedule updated successfully'
