@@ -120,11 +120,6 @@ class sessionsController extends Controller
     }
     public function logout()
     {
-        if (!Auth::check())
-            return response()->json([
-                'success' => true,
-                'messsage' => 'not signed in'
-            ]);
         Auth::logout();
         return response()->json([
             'status' => 'success',

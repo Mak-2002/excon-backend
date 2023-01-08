@@ -5,9 +5,11 @@ use App\Http\Controllers\ChatsController;
 use App\Http\Controllers\ExpertsController;
 use App\Http\Controllers\sessionsController;
 use App\Http\Controllers\UsersController;
+use App\Models\CalendarDay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use PhpParser\Node\Expr\CallLike;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,7 @@ Route::prefix('expert')->group(function () {
     Route::get('appointments', [ExpertsController::class, 'appointments']);
     Route::post('updateschedule', [ExpertsController::class, 'update_schedule']);
     Route::get('upcomingcalendar', [CalendarController::class, 'get_availability']);
+    Route::post('book', [CalendarController::class, 'reserve']);
 });
 
 //chats controller
