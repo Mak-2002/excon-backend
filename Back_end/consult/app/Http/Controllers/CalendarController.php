@@ -114,7 +114,7 @@ class CalendarController extends Controller
             ]);
         return response()->json([
             'success' => true,
-            'appointment booked successfully'
+            'message' => 'appointment booked successfully'
         ]);
     }
 }
