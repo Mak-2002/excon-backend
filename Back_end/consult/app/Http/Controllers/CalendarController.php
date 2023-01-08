@@ -66,6 +66,7 @@ class CalendarController extends Controller
     {
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         $calendar_days = CalendarDay::where('expert_id', $expert->id);
+        self::modify_calendar($expert);
         $res = [];
         foreach ($calendar_days as $day) {
             $temp = [$day->period_1_is_available(), $day->period_2_is_available()];

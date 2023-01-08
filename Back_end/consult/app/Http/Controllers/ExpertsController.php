@@ -213,18 +213,20 @@ class ExpertsController extends Controller
         // time format in 24h
 
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $expert->start_time_1 = Carbon::parse($request->start_time_1)->hour;
-        $expert->end_time_1 = Carbon::parse($request->end_time_1)->hour;
+        $expert->start_time_1 = $request->start_time_1;
+        $expert->end_time_1 = $request->end_time_1;
         if ($request->start_time_2 ?? false) {
-            $expert->start_time_2 = Carbon::parse($request->start_time_2)->hour;
-            $expert->end_time_2 = Carbon::parse($request->end_time_2)->hour;
+            $expert->start_time_2 = $request->start_time_2;
+            $expert->end_time_2 = $request->end_time_2;
         } else {
             $expert->start_time_2 = 0;
             $expert->end_time_2 = 0;
         }
         // dd($expert); //DEBUG
-        $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $dayNum => $is_available) {
+            $row = WorkDay::where('expert_id', $expert->id)->where('day_of_week', $dayNum);
+            if ($row->count() > 0)
+                $row->delete();
             $row = new Workday;
             //dd($work_day); //DEBUG
             $row->day_of_week = $dayNum;
@@ -243,8 +245,6 @@ class ExpertsController extends Controller
                 'message' => 'could not modify expert schedule'
             ]);
 
-        CalendarController::update_hours($expert);
-        return CalendarDay::where('expert_id', $expert->id)->get()->toArray();
         return response()->json([
             'success' => true,
             'message' => 'schedule updated successfully'
