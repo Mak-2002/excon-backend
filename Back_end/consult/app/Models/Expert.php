@@ -54,17 +54,18 @@ class Expert extends Model
         return $this->hasMany(WorkDay::class);
     }
 
-    protected static function scopeUser($query, $user_id) { // get expert's user
-        $query->whereHas(
-            'user',
-            fn($query) => $query->where('id', $user_id)
-        )->first();
-    }
-
     public function favorable_by() {
         return $this->hasMany(Favorite::class);
     }
 
+    protected function scopeExclude($query, $to_be_ex_expert_id) {
+        $query->whereHas(
+            'user',
+            fn($query) =>
+            $query->where('id', '!=', $to_be_ex_expert_id)
+        );
+    }
+ 
     protected function scopeFilter($query,array $filters)
     {
         // Search

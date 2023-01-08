@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Appointment, WorkDay, Expert, Favorite, Rating, User};
+use App\Models\{Appointment, CalendarDay, WorkDay, Expert, Favorite, Rating, User};
 use Carbon\Carbon;
 use Database\Factories\WorkdayFactory;
 use Illuminate\Http\Request;
@@ -39,7 +39,7 @@ class ExpertsController extends Controller
 
     public function get_schedule(Expert $expert)
     {
-        $week_availability = WorkDay::whereHas('expert', $expert);
+        $week_availability = WorkDay::where('expert_id', $expert->id);
         if (is_null($week_availability))
             return array_fill(0, 7, false);
         $res = [];
@@ -150,16 +150,18 @@ class ExpertsController extends Controller
 
     public function index(Request $request)
     {
-        $curr_expert = self::find_expert_by_user_id_or_fail($request->expert_id, false);
-        $to_exclude_expert_id = -1;
+        $curr_expert = self::find_expert_by_user_id_or_fail($request->user_id, false);
+        // dd($curr_expert); // DEBUG
+        $to_be_excl_expert_id = -1;
         if (!is_null($curr_expert))
-            $to_exclude_expert_id = $curr_expert->id;
+            $to_be_excl_expert_id = $request->user_id;
+        // dd($to_exclude_expert_id); // DEBUG
         $query = Expert::latest()->with(['user', 'consultations'])
             ->filter([
                 'consulttype' => $request->consulttype,
                 'search' => $request->search
             ])
-            ->where('id', '!=', $to_exclude_expert_id)
+            ->exclude($to_be_excl_expert_id)
             ->get();
 
         foreach ($query as $expert)
@@ -189,7 +191,7 @@ class ExpertsController extends Controller
     public function appointments(Request $request)
     {
         return response()->json(
-            self::find_expert_by_user_id_or_fail($request->expert_id)->expert->appointments->makeHidden('expert_id')
+            self::find_expert_by_user_id_or_fail($request->expert_id)->appointments->makeHidden('expert_id')
         );
     }
 
@@ -203,29 +205,7 @@ class ExpertsController extends Controller
     public function book(Request $request)
     {
 
-        // time format in 24h
-        $appointment = new Appointment;
-        $user = UsersController::find_user_or_fail($request->user_id);
-        $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-
-        $start_date = Carbon::parse($request->date);
-        $end_date = Carbon::parse($request->date)->addHour();
-        $appointment->start_date = $start_date;
-        $appointment->end_date = $end_date;
-        $appointment->setRelation('user', $user);
-        $appointment->user_id = $user->id;
-        $appointment->setRelation('expert', $expert);
-        $appointment->expert_id = $expert->id;
-
-        if (!$appointment->save())
-            return response()->json([
-                'success' => false,
-                'message' => "could not save appointment"
-            ]);
-        return response()->json([
-            'success' => true,
-            'message' => 'appointment saved successfully'
-        ]);
+        
     }
 
     public function update_schedule(Request $request)
@@ -233,18 +213,21 @@ class ExpertsController extends Controller
         // time format in 24h
 
         $expert = self::find_expert_by_user_id_or_fail($request->expert_id);
-        $expert->start_time_1 = $request->start_time_1;
-        $expert->end_time_1 = $request->end_time_1;
+        $expert->start_time_1 = Carbon::parse($request->start_time_1)->hour;
+        $expert->end_time_1 = Carbon::parse($request->end_time_1)->hour;
         if ($request->start_time_2 ?? false) {
-            $expert->start_time_2 = $request->start_time_2;
-            $expert->end_time_2 = $request->end_time_2;
+            $expert->start_time_2 = Carbon::parse($request->start_time_2)->hour;
+            $expert->end_time_2 = Carbon::parse($request->end_time_2)->hour;
+        } else {
+            $expert->start_time_2 = 0;
+            $expert->end_time_2 = 0;
         }
         // dd($expert); //DEBUG
         $table = WorkDay::where('expert_id', $expert->id);
         foreach ($request->days as $dayNum => $is_available) {
             $row = new Workday;
             //dd($work_day); //DEBUG
-            $row->day = $dayNum;
+            $row->day_of_week = $dayNum;
             $row->setRelation('expert', $expert);
             $row->expert_id = $expert->id;
             $row->is_available = $is_available;
@@ -261,7 +244,7 @@ class ExpertsController extends Controller
             ]);
 
         CalendarController::update_hours($expert);
-
+        return CalendarDay::where('expert_id', $expert->id)->get()->toArray();
         return response()->json([
             'success' => true,
             'message' => 'schedule updated successfully'

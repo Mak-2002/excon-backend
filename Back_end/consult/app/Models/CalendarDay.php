@@ -13,7 +13,15 @@ class CalendarDay extends Model
         return $this->hasMany(CalendarDayHour::class);
     }
 
+    public function period_1_is_available() {
+        return $this->first_av_st_1 < $this->end_time_1;
+    }
+
+    public function period_2_is_available() {
+        return $this->first_av_st_2 < $this->end_time_2;
+    }
+
     public function is_available() {
-        return $this->available_hours_count > 0;
+        return $this->period_1_is_available() || $this->period_2_is_available();
     }
 }

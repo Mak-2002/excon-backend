@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ChatsController extends Controller
 {
@@ -25,6 +24,6 @@ class ChatsController extends Controller
                 'other_user_name' => $other_user->name,
                 'chat' => $chat->messages
             ];
-        return response()->json($res);
+        return response()->json([$res]);
     }
 }

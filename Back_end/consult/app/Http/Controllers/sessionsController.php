@@ -14,15 +14,14 @@ class sessionsController extends Controller
 {
     public function create(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:22'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'min:8'],
-        ]);
-
-        if (!is_null(UsersController::find_user_by_email_or_fail($request->email, false)))
+        if (
+            !$request->validate([
+                'name' => ['required', 'string', 'max:22'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+                'password' => ['required', 'min:8'],
+            ])
+        )
             throw new Exception(" USER ALREADY EXISTS ", 1);
-
 
         $user = new User;
         $user->name = $request->name;
@@ -56,8 +55,7 @@ class sessionsController extends Controller
                 ]);
             $count = 1;
             foreach ($request->consultations as $exists) {
-                if(!$exists) 
-                {
+                if (!$exists) {
                     $count++;
                     continue;
                 }
@@ -65,7 +63,7 @@ class sessionsController extends Controller
                 if (is_null($type))
                     return response()->json([
                         'success' => false,
-                        'message' => 'could not find' + $count + 'th consultation item in database' //TODO
+                        'message' => 'could not find ' . $count . 'th consultation item in database' //TODO
                     ]);
                 $consult = new Consultation;
                 $consult->setRelation('expert', $expert);
@@ -75,7 +73,7 @@ class sessionsController extends Controller
                 if (!$consult->save())
                     return response()->json([
                         'success' => false,
-                        'message' => 'could not add' + $count + 'th  consultation item'
+                        'message' => 'could not add ' . $count . 'th  consultation item'
                     ]);
                 $count++;
             }
@@ -113,7 +111,7 @@ class sessionsController extends Controller
         ];
 
         $expert = ExpertsController::find_expert_by_user_id_or_fail($user->id, false);
-        if(!is_null($expert)) {
+        if (!is_null($expert)) {
             $expert->makeHidden(['user', 'consultations']);
             $result['expert'] = $expert;
             $result['consultations'] = $expert->consultations;
@@ -122,6 +120,11 @@ class sessionsController extends Controller
     }
     public function logout()
     {
+        if (!Auth::check())
+            return response()->json([
+                'success' => true,
+                'messsage' => 'not signed in'
+            ]);
         Auth::logout();
         return response()->json([
             'status' => 'success',

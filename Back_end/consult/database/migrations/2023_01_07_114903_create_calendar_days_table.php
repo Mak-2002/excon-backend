@@ -18,7 +18,10 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('expert_id');
             $table->date('date');
-            $table->integer('available_hours_count')->default(0);
+            $table->integer('first_av_st_1')->default(0);
+            $table->integer('end_time_1')->default(0);
+            $table->integer('first_av_st_2')->default(0);
+            $table->integer('end_time_2')->default(0);
         });
     }
 

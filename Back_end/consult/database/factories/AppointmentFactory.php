@@ -19,8 +19,9 @@ class AppointmentFactory extends Factory
     public function definition()
     {
         return [
-            'start_date' => $this->faker->dateTime,
-            'end_date' => $this->faker->dateTime,
+            'date' => $this->faker->date,
+            'start_hour' => $this->faker->time,
+            'end_hour' => $this->faker->time,
             'user_id' => User::factory(),
             'expert_id' => Expert::factory()
         ];

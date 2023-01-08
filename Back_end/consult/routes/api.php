@@ -1,15 +1,10 @@
 <?php
 
-use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChatsController;
-use App\Http\Controllers\ConsultTypesController;
 use App\Http\Controllers\ExpertsController;
-use App\Http\Controllers\MessagesController;
-use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\sessionsController;
 use App\Http\Controllers\UsersController;
-use App\Models\CalendarDay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -48,7 +43,6 @@ Route::prefix('expert')->group(function () {
     Route::get('appointments', [ExpertsController::class, 'appointments']);
     Route::post('updateschedule', [ExpertsController::class, 'update_schedule']);
     Route::get('upcomingcalendar', [CalendarController::class, 'get_availability']);
-    Route::get('availablehours', [CalendarController::class, 'get_available_hours']);
 });
 
 //chats controller
