@@ -62,6 +62,14 @@ class CalendarController extends Controller
         }
     }
 
+    public static function period_1_is_available(CalendarDay $day) {
+        return $day->first_av_st_1 < $day->end_time_1;
+    }
+
+    public static function period_2_is_available(CalendarDay $day) {
+        return $day->first_av_st_2 < $day->end_time_2;
+    }
+
     public function get_availability(Request $request)
     {
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
@@ -69,6 +77,7 @@ class CalendarController extends Controller
         self::modify_calendar($expert);
         $res = [];
         foreach ($calendar_days as $day) {
+            dd(self::period_1_is_available($day));
             $temp = [$day->period_1_is_available(), $day->period_2_is_available()];
             array_push($res, $temp);
         }

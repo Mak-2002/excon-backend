@@ -202,12 +202,6 @@ class ExpertsController extends Controller
         ]);
     }
 
-    public function book(Request $request)
-    {
-
-        
-    }
-
     public function update_schedule(Request $request)
     {
         // time format in 24h
