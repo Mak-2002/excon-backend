@@ -19,12 +19,10 @@ class ExpertFactory extends Factory
     {
         return [
             'photo_path' => $this->faker->filePath,
-            'address_en' => $this->faker->sentence,
-            'address_ar' => $this->faker->sentence,
+            'address' => $this->faker->sentence,
             'rating_sum' => 11,
             'rating_count' => 4,
-            'bio_en' => $this->faker->paragraph,
-            'bio_ar' => $this->faker->paragraph,
+            'bio' => $this->faker->paragraph,
             'service_cost' => 20.0,
             'user_id' => User::factory(),
         ];

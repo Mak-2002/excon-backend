@@ -1,11 +1,10 @@
 
 Route::post('register', [sessionsController::class, 'create']);
 {
-    "name_en":"",
-    "name_ar":"",
+    "name":"",
     "email":"xx@emailProvider.com",
     "password":"min:8chars",
-    "bio_en":"",
+    "bio":"",
     "phone":"",
     "service_cost": 15,
     "consultations":{
@@ -29,7 +28,7 @@ Route::prefix('expert')->group(function () {
     Route::post('update', [ExpertsController::class, 'update']);
     {
         "expert_id":111,
-        "bio_en":"I love me"
+        "bio":"I love me"
     }
     Route::post('uploadprofilephoto', [ExpertsController::class, 'upload_profile_photo']);
     params: profile_photo  ->  file.jpg

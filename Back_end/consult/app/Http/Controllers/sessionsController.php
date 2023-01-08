@@ -15,8 +15,7 @@ class sessionsController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'name_en' => ['required', 'string', 'max:22'],
-            'name_ar' => ['required', 'string', 'max:22'],
+            'name' => ['required', 'string', 'max:22'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'min:8'],
         ]);
@@ -26,8 +25,7 @@ class sessionsController extends Controller
 
 
         $user = new User;
-        $user->name_en = $request->name_en;
-        $user->name_ar = $request->name_ar;
+        $user->name = $request->name;
         $user->phone = $request->phone;
         $user->email = mb_strtolower($request->email);
         $user->password = bcrypt($request->password);
@@ -42,13 +40,11 @@ class sessionsController extends Controller
         $expert = new Expert;
         if ($user->is_expert) {
             $request->validate([
-                'bio_en' => 'required',
+                'bio' => 'required',
                 'service_cost' => 'required|numeric',
             ]);
-            $expert->address_en = $request->address_en;
-            $expert->address_ar = $request->address_ar;
-            $expert->bio_en = $request->bio_en;
-            $expert->bio_ar = $request->bio_ar;
+            $expert->address = $request->address;
+            $expert->bio = $request->bio;
             $expert->service_cost = $request->service_cost;
             $expert->setRelation('user', $user);
             $expert->user_id = $user->id;

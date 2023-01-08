@@ -97,7 +97,7 @@ class UsersController extends Controller
         foreach ($chats as $chat) {
             $other_user_id = $chat->user_1_id;
             if($other_user_id == $request->user_id) $other_user_id = $chat->user_2_id;
-            $chat['other_user_end'] = self::find_user_or_fail($other_user_id)->name_en;
+            $chat['other_user_name'] = self::find_user_or_fail($other_user_id)->name;
         }
         return response()->json($chats);
     }

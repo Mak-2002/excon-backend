@@ -21,9 +21,8 @@ class UserFactory extends Factory
     {
         return [
             'phone' => $this->faker->phoneNumber,
-            'name_en' => fake()->name(),
+            'name' => fake()->name(),
             'email' => fake()->email(),
-            'name_ar' => 'الديك مدحت',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
             // password
             'is_expert' => $this->faker->boolean,

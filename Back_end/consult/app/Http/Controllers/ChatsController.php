@@ -14,17 +14,17 @@ class ChatsController extends Controller
         $user_2_id = max($request->user_id, $request->expert_id);
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         $chat = Chat::where('user_1_id', $user_1_id)->where('user_2_id', $user_2_id)->first();
-        if (!$chat->exists())
+        if (is_null($chat))
             $res = [
                 'success' => false,
-                'message' => 'chat not initiated yet between these two users'
+                'message' => 'chat not yet initiated between these two users'
             ];
         else
             $res = [
                 'success' => true,
-                'other_user_name' => $expert->name_en,
+                'other_user_name' => $expert->user->name,
                 'chat' => $chat->messages
             ];
-        return response()->json([$res]);
+        return response()->json($res);
     }
 }
