@@ -12,6 +12,7 @@ class ChatsController extends Controller
     {
         $user_1_id = min($request->user_id, $request->expert_id);
         $user_2_id = max($request->user_id, $request->expert_id);
+        $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
         $chat = Chat::where('user_1_id', $user_1_id)->where('user_2_id', $user_2_id)->first();
         if (!$chat->exists())
             $res = [
@@ -21,6 +22,7 @@ class ChatsController extends Controller
         else
             $res = [
                 'success' => true,
+                'other_user_name' => $expert->name_en,
                 'chat' => $chat->messages
             ];
         return response()->json([$res]);

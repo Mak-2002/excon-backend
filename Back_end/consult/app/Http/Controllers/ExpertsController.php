@@ -104,7 +104,6 @@ class ExpertsController extends Controller
         $image_name = $request->expert_id . '.' . $image->getClientOriginalExtension();
         $image->move(public_path('profile_photos'), $image_name);
         $image_path = 'profile_photos/' . $image_name;
-        dd(asset($image_path));
         // dd($path); //DEBUG
         $expert->photo_path = $image_path;
         if (!$expert->save())
@@ -118,7 +117,6 @@ class ExpertsController extends Controller
                 'message' => 'profile photo updated successfully'
             ];
         return response()->json([$res]);
-
     }
 
     public function update_rating(Request $request)
