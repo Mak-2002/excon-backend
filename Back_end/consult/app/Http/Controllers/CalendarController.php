@@ -73,12 +73,11 @@ class CalendarController extends Controller
     public function get_availability(Request $request)
     {
         $expert = ExpertsController::find_expert_by_user_id_or_fail($request->expert_id);
-        $calendar_days = CalendarDay::where('expert_id', $expert->id);
         self::modify_calendar($expert);
+        $calendar_days = CalendarDay::where('expert_id', $expert->id)->get();
         $res = [];
         foreach ($calendar_days as $day) {
-            dd(self::period_1_is_available($day));
-            $temp = [$day->period_1_is_available(), $day->period_2_is_available()];
+            $temp = [self::period_1_is_available($day), self::period_2_is_available($day)];
             array_push($res, $temp);
         }
         return response()->json($res);
