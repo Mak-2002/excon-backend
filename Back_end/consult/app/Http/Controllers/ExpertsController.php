@@ -190,9 +190,13 @@ class ExpertsController extends Controller
 
     public function appointments(Request $request)
     {
-        return response()->json(
-            self::find_expert_by_user_id_or_fail($request->expert_id)->appointments->makeHidden('expert_id')
-        );
+        $appointments = self::find_expert_by_user_id_or_fail($request->expert_id)->appointments->makeHidden('expert_id')->toArray();
+        $res = [];
+        foreach ($appointments as $appointment) {
+            $appointment['user_name'] = UsersController::find_user_or_fail($appointment['user_id'])->name;
+            array_push($res, $appointment);
+        }
+        return response()->json($res);
     }
 
     public function chats(Request $request)
