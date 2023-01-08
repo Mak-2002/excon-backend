@@ -98,17 +98,16 @@ class CalendarController extends Controller
         $appointment->setRelation('expert', $expert);
         $appointment->user_id = $user->id;
         $appointment->expert_id = $expert->id;
-        if (!$appointment->save())
-            return response()->json([
-                'success' => false,
-                'message' => 'could not save appointment'
-            ]);
         $day = CalendarDay::where('expert_id', $expert->id)->whereDate('date', $date->format('y-m-d'))->first();
-        if ($period == 1)
-            $day->first_av_st_1++;
-        else
-            $day->first_av_st_2++;
-        if (!$day->save())
+        if ($period == 1) {
+            $appointment->start_hour = $day->first_av_st_1++;
+            $appointment->end_hour = $day->first_av_st_1;
+        } else {
+            $appointment->start_hour = $day->first_av_st_2++;
+            $appointment->end_hour = $day->first_av_st_2;
+        }
+        
+        if (!$day->save() || !$appointment->save())
             return response()->json([
                 'success' => false,
                 'message' => 'could not modify day of calendar'
